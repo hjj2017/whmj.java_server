@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mj.bizserver.mod.userinfo.dao.IUserDao">
+    <resultMap id="userEntity" type="org.mj.bizserver.mod.userinfo.dao.UserEntity">
+        <id property="_userId" column="user_id"/>
+        <result property="_userName" column="user_name"/>
+        <result property="_headImg" column="head_img"/>
+        <result property="_sex" column="sex"/>
+        <result property="_roomCard" column="room_card"/>
+        <result property="_createTime" column="create_time"/>
+        <result property="_clientVer" column="client_ver"/>
+        <result property="_lastLoginTime" column="last_login_time"/>
+        <result property="_lastLoginIp" column="last_login_ip"/>
+        <result property="_state" column="state"/>
+    </resultMap>
+
+    <select id="getEntityByUserId" resultMap="userEntity">
+        SELECT * FROM t_user WHERE user_id = #{_userId};
+    </select>
+
+    <update id="costRoomCard">
+        UPDATE
+            t_user
+        SET
+            room_card = room_card - #{_deltaVal}
+        WHERE
+            user_id = #{_userId} AND room_card >= ${_deltaVal}
+    </update>
+</mapper>

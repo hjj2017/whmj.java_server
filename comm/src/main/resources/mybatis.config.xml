@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <environments default="OFFICIAL">
+        <environment id="OFFICIAL">
+            <transactionManager type="JDBC"/>
+            <dataSource type="org.mj.comm.util.CustomDataSourceFactory">
+                <property name="driver" value="${_driver}"/>
+                <property name="url" value="jdbc:mysql://${serverHost}:${serverPort}/${db}?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&amp;autoReconnectForPools=true&amp;allowMultiQueries=true&amp;useAffectedRows=true"/>
+                <property name="username" value="${userName}"/>
+                <property name="password" value="${password}"/>
+                <property name="initialSize" value="${initialSize}"/>
+                <property name="minIdle" value="${minIdle}"/>
+                <property name="maxActive" value="${maxActive}"/>
+                <property name="maxWait" value="${maxWait}"/>
+
+                <!--// Druid, 不常修改的配置 //-->
+                <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+                <property name="minEvictableIdleTimeMillis" value="120000"/>
+                <property name="validationQuery" value="select -1"/>
+                <property name="testOnBorrow" value="false"/>
+                <property name="testOnReturn" value="false"/>
+                <property name="testWhileIdle" value="true"/>
+                <property name="poolPreparedStatements" value="false"/>
+                <property name="removeAbandoned" value="false"/>
+                <property name="removeAbandonedTimeout" value="1200"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+</configuration>

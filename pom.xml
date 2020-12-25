@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.mj</groupId>
+    <artifactId>java_server</artifactId>
+    <packaging>pom</packaging>
+    <version>0.0.1.FINAL</version>
+
+    <properties>
+        <!--
+        // 当前项目版本号
+        //-->
+        <ver.the_project>1.5_beta</ver.the_project>
+
+        <!--
+        // 依赖项目版本号
+        //-->
+        <ver.netty-all>4.1.50.Final</ver.netty-all>
+        <ver.slf4j-log4j12>1.7.30</ver.slf4j-log4j12>
+        <ver.commons-cli>1.4</ver.commons-cli>
+        <ver.jedis>3.3.0</ver.jedis>
+        <ver.fastjson>1.2.68</ver.fastjson>
+        <ver.protobuf-java>3.12.1</ver.protobuf-java>
+        <ver.mysql-connector-java>8.0.20</ver.mysql-connector-java>
+        <ver.mybatis>3.5.4</ver.mybatis>
+        <ver.druid>1.1.22</ver.druid>
+        <ver.aliyun-sdk-oss>3.10.2</ver.aliyun-sdk-oss>
+        <ver.aliyun-java-sdk-core>4.5.3</ver.aliyun-java-sdk-core>
+        <ver.aliyun-java-sdk-geoip>1.0.3</ver.aliyun-java-sdk-geoip>
+        <ver.maven-compiler-plugin>3.8.1</ver.maven-compiler-plugin>
+        <ver.jdk>13</ver.jdk>
+        <ver.junit>4.13</ver.junit>
+    </properties>
+
+    <modules>
+        <module>./comm</module>
+        <module>./bizserver</module>
+        <module>./proxyserver</module>
+    </modules>
+</project>

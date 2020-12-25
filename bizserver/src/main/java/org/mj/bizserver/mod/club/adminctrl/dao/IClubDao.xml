@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mj.bizserver.mod.club.adminctrl.dao.IClubDao">
+    <resultMap id="clubEntity" type="org.mj.bizserver.mod.club.adminctrl.dao.ClubEntity">
+        <id property="_clubId" column="club_id"/>
+        <result property="_clubName" column="club_name"/>
+        <result property="_creatorId" column="creator_id"/>
+        <result property="_createTime" column="create_time"/>
+        <result property="_currState" column="curr_state"/>
+    </resultMap>
+
+    <insert id="insertInto">
+        INSERT INTO t_club (
+            club_id,
+            club_name,
+            creator_id,
+            create_time,
+            curr_state
+        )
+        VALUE (
+            #{_clubId},
+            #{_clubName},
+            #{_creatorId},
+            #{_createTime},
+            #{_currState}
+        )
+        ON DUPLICATE KEY UPDATE
+            create_time = #{_createTime};
+    </insert>
+
+    <update id="updateNumOfPeople">
+        UPDATE
+            t_club
+        SET
+            num_of_people = ( SELECT count(-1) FROM t_club_member WHERE club_id = #{_clubId} AND curr_state = 1 )
+        WHERE
+            club_id = #{_clubId};
+    </update>
+
+    <update id="updateFixGameX">
+        UPDATE
+            t_club
+        SET
+            fix_game_#{_index} = #{_fixGame}
+        WHERE
+            club_id = #{_clubId};
+    </update>
+
+    <update id="addRoomCard">
+        UPDATE
+            t_club
+        SET
+            room_card = IFNULL(room_card, 0) + #{_exRoomCard}
+        WHERE
+            club_id = #{_clubId};
+    </update>
+
+    <update id="updateCurrState">
+        UPDATE
+            t_club
+        SET
+            curr_state = #{_currState}
+        WHERE
+            club_id = #{_clubId}
+    </update>
+
+</mapper>

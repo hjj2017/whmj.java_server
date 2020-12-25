@@ -1,0 +1,5 @@
+/.meta
+/.idea
+**/*.iml
+**/target
+**/log

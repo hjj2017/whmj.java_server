@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mj.bizserver.mod.game.MJ_weihai_.dao.ICostRoomCardConfDao">
+    <resultMap id="costRoomCardConfEntity" type="org.mj.bizserver.mod.game.MJ_weihai_.dao.CostRoomCardConfEntity">
+        <id property="_dummyId" column="dummy_id"/>
+        <result property="_gameType0" column="game_type_0"/>
+        <result property="_gameType1" column="game_type_1"/>
+        <result property="_maxPlayer" column="max_player"/>
+        <result property="_maxRound" column="max_round"/>
+        <result property="_maxCircle" column="max_circle"/>
+        <result property="_paymentWayClub" column="payment_way_club"/>
+        <result property="_paymentWayRoomOwner" column="payment_way_room_owner"/>
+        <result property="_paymentWayAA" column="payment_way_aa"/>
+    </resultMap>
+
+    <select id="listByGameType" resultMap="costRoomCardConfEntity">
+        SELECT dummy_id,
+               game_type_0,
+               game_type_1,
+               max_player,
+               max_round,
+               max_circle,
+               payment_way_club,
+               payment_way_room_owner,
+               payment_way_aa
+          FROM t_cost_room_card_conf
+         WHERE game_type_0 = #{_gameType0}
+           AND game_type_1 = #{_gameType1}
+    </select>
+</mapper>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mj.bizserver.mod.stat.dao.IUserGameLogDao">
+    <insert id="insertOrElseUpdate">
+        <!-- 创建本周表和下周表 -->
+        CREATE TABLE IF NOT EXISTS t_${thisWeekTableNamePrefix}_user_game_log LIKE mj_log_template.t_template_user_game_log;
+        CREATE TABLE IF NOT EXISTS t_${nextWeekTableNamePrefix}_user_game_log LIKE mj_log_template.t_template_user_game_log;
+
+        <!-- 写入本周数据, XXX 注意: 后面还需要写入下周数据 -->
+        INSERT INTO t_${thisWeekTableNamePrefix}_user_game_log (
+            `room_uuid`,
+            `user_id`,
+            `club_id`,
+            `room_id`,
+            `game_type_0`,
+            `game_type_1`,
+            `create_time`,
+            `total_score`,
+            `is_winner`
+        ) VALUE (
+            #{_roomUUId},
+            #{_userId},
+            #{_clubId},
+            #{_roomId},
+            #{_gameType0},
+            #{_gameType1},
+            #{_createTime},
+            #{_totalScore},
+            #{_isWinner}
+        ) ON DUPLICATE KEY UPDATE
+            total_score = #{_totalScore},
+            is_winner = #{_isWinner};
+
+        <!-- 写入下周数据 -->
+        INSERT INTO t_${thisWeekTableNamePrefix}_user_game_log (
+            `room_uuid`,
+            `user_id`,
+            `club_id`,
+            `room_id`,
+            `game_type_0`,
+            `game_type_1`,
+            `create_time`,
+            `total_score`,
+            `is_winner`
+        ) VALUE (
+            #{_roomUUId},
+            #{_userId},
+            #{_clubId},
+            #{_roomId},
+            #{_gameType0},
+            #{_gameType1},
+            #{_createTime},
+            #{_totalScore},
+            #{_isWinner}
+        ) ON DUPLICATE KEY UPDATE
+            total_score = #{_totalScore},
+            is_winner = #{_isWinner};
+    </insert>
+</mapper>

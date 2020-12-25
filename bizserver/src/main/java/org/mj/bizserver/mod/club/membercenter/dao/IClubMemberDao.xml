@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mj.bizserver.mod.club.membercenter.dao.IClubMemberDao">
+    <resultMap id="clubMemberEntity" type="org.mj.bizserver.mod.club.membercenter.dao.ClubMemberEntity">
+        <id property="_userId" column="user_id"/>
+        <id property="_clubId" column="club_id"/>
+        <result property="_role" column="role"/>
+        <result property="_joinTime" column="join_time"/>
+        <result property="_currState" column="curr_state"/>
+    </resultMap>
+
+    <select id="getClubIdList" resultType="java.lang.Integer">
+        SELECT
+            club_id
+        FROM
+            t_club_member
+        WHERE
+            user_id = #{_userId}
+            <if test="_stateArray.length > 0">
+                AND curr_state IN
+                <foreach item="item" collection="_stateArray" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        ORDER BY
+            join_time DESC;
+    </select>
+
+    <select id="getUserIdList" resultType="java.lang.Integer">
+        SELECT
+            user_id
+        FROM
+            t_club_member
+        WHERE
+            club_id = #{_clubId}
+            <if test="_stateArray.length > 0">
+                AND curr_state IN
+                <foreach item="item" collection="_stateArray" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        ORDER BY
+            role DESC,
+            join_time DESC;
+    </select>
+
+    <select id="getClubMemberEntity" resultMap="clubMemberEntity">
+        SELECT
+            user_id,
+            club_id,
+            role,
+            join_time,
+            curr_state
+        FROM
+            t_club_member
+        WHERE
+            user_id = #{_userId}
+            AND club_id = #{_clubId};
+    </select>
+
+    <insert id="insertInto">
+        INSERT INTO t_club_member (
+            user_id,
+            club_id,
+            role,
+            join_time,
+            curr_state
+        )
+        VALUE (
+            #{_userId},
+            #{_clubId},
+            #{_role},
+            #{_joinTime},
+            #{_currState}
+        )
+        ON DUPLICATE KEY UPDATE
+            role = #{_role},
+            join_time = #{_joinTime},
+            curr_state = #{_currState};
+    </insert>
+
+    <update id="changeCurrState">
+        UPDATE
+            t_club_member
+        SET
+            curr_state = #{_currState}
+        WHERE
+            user_id = #{_userId}
+            AND club_id = #{_clubId};
+    </update>
+
+</mapper>

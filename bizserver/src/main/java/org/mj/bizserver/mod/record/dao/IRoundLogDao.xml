@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mj.bizserver.mod.record.dao.IRoundLogDao">
+    <resultMap id="roundLogEntity" type="org.mj.bizserver.mod.record.dao.RoundLogEntity">
+        <id property="_roomUUId" column="room_uuid"/>
+        <id property="_roundIndex" column="round_index"/>
+        <result property="_createTime" column="create_time"/>
+        <result property="_allPlayer" column="all_player"/>
+        <result property="_allCurrScore" column="all_curr_score"/>
+        <result property="_userId0" column="user_id_0"/>
+        <result property="_userId1" column="user_id_1"/>
+        <result property="_userId2" column="user_id_2"/>
+        <result property="_userId3" column="user_id_3"/>
+        <result property="_userId4" column="user_id_4"/>
+        <result property="_userId5" column="user_id_5"/>
+        <result property="_playbackStub" column="playback_stub"/>
+    </resultMap>
+
+    <insert id="insertOrElseUpdate">
+        <!-- 创建本周表和下周表 -->
+        CREATE TABLE IF NOT EXISTS t_${thisWeekTableNamePrefix}_round_log LIKE mj_log_template.t_template_round_log;
+        CREATE TABLE IF NOT EXISTS t_${nextWeekTableNamePrefix}_round_log LIKE mj_log_template.t_template_round_log;
+
+        <!-- 写入本周数据, XXX 注意: 后面还需要写入下周数据 -->
+        INSERT INTO t_${thisWeekTableNamePrefix}_round_log (
+            `room_uuid`,
+            `round_index`,
+            `create_time`,
+            `all_player`,
+            `all_curr_score`,
+            `user_id_0`,
+            `user_id_1`,
+            `user_id_2`,
+            `user_id_3`,
+            `user_id_4`,
+            `user_id_5`,
+            `playback_stub`
+        ) VALUE (
+            #{_roomUUId},
+            #{_roundIndex},
+            #{_createTime},
+            #{_allPlayer},
+            #{_allCurrScore},
+            #{_userId0},
+            #{_userId1},
+            #{_userId2},
+            #{_userId3},
+            #{_userId4},
+            #{_userId5},
+            #{_playbackStub}
+        ) ON DUPLICATE KEY UPDATE
+            `all_curr_score` = #{_allCurrScore};
+
+        <!-- 写入下周数据 -->
+        INSERT INTO t_${nextWeekTableNamePrefix}_round_log (
+            `room_uuid`,
+            `round_index`,
+            `create_time`,
+            `all_player`,
+            `all_curr_score`,
+            `user_id_0`,
+            `user_id_1`,
+            `user_id_2`,
+            `user_id_3`,
+            `user_id_4`,
+            `user_id_5`,
+            `playback_stub`
+        ) VALUE (
+            #{_roomUUId},
+            #{_roundIndex},
+            #{_createTime},
+            #{_allPlayer},
+            #{_allCurrScore},
+            #{_userId0},
+            #{_userId1},
+            #{_userId2},
+            #{_userId3},
+            #{_userId4},
+            #{_userId5},
+            #{_playbackStub}
+        ) ON DUPLICATE KEY UPDATE
+            `all_curr_score` = #{_allCurrScore};
+    </insert>
+
+    <select id="existThisWeekTable" resultType="java.lang.String">
+        SHOW TABLES LIKE 't_${_thisWeekTableNamePrefix}_round_log'
+    </select>
+
+    <select id="getEntityListByRoomUUId" resultMap="roundLogEntity">
+        SELECT * FROM t_${_thisWeekTableNamePrefix}_round_log WHERE room_uuid = #{_roomUUId} ORDER BY round_index ASC;
+    </select>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mj.bizserver.mod.club.membercenter.dao.IClubDao">
+    <resultMap id="clubEntity" type="org.mj.bizserver.mod.club.membercenter.dao.ClubEntity">
+        <id property="_clubId" column="club_id"/>
+        <result property="_clubName" column="club_name"/>
+        <result property="_creatorId" column="creator_id"/>
+        <result property="_roomCard" column="room_card"/>
+        <result property="_notice" column="notice"/>
+        <result property="_createTime" column="create_time"/>
+        <result property="_numOfPeople" column="num_of_people"/>
+        <result property="_currState" column="curr_state"/>
+        <result property="_fixGame0" column="fix_game_0"/>
+        <result property="_fixGame1" column="fix_game_1"/>
+        <result property="_fixGame2" column="fix_game_2"/>
+        <result property="_fixGame3" column="fix_game_3"/>
+        <result property="_fixGame4" column="fix_game_4"/>
+        <result property="_fixGame5" column="fix_game_5"/>
+    </resultMap>
+
+    <select id="getByClubId" resultMap="clubEntity">
+        SELECT
+            club_id,
+            club_name,
+            creator_id,
+            room_card,
+            notice,
+            create_time,
+            num_of_people,
+            curr_state,
+            fix_game_0,
+            fix_game_1,
+            fix_game_2,
+            fix_game_3,
+            fix_game_4,
+            fix_game_5
+        FROM
+            t_club
+        WHERE
+            club_id = #{_clubId}
+            AND curr_state = 1;
+    </select>
+
+    <update id="updateNumOfPeople">
+        UPDATE
+            t_club
+        SET
+            num_of_people = ( SELECT count(-1) FROM t_club_member WHERE club_id = #{_clubId} AND curr_state = 1 )
+        WHERE
+            club_id = #{_clubId};
+    </update>
+
+    <update id="costRoomCard">
+        UPDATE
+            t_club
+        SET
+            room_card = room_card - #{_deltaVal}
+        WHERE
+            club_id = #{_clubId}
+            AND room_card >= ${_deltaVal};
+    </update>
+</mapper>

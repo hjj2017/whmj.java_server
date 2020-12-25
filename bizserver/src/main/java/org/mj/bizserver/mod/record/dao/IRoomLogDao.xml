@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mj.bizserver.mod.record.dao.IRoomLogDao">
+    <resultMap id="roomLogEntity" type="org.mj.bizserver.mod.record.dao.RoomLogEntity">
+        <id property="_roomUUId" column="room_uuid"/>
+        <result property="_roomId" column="room_id"/>
+        <result property="_ownerId" column="owner_id"/>
+        <result property="_clubId" column="club_id"/>
+        <result property="_createTime" column="create_time"/>
+        <result property="_overTime" column="over_time"/>
+        <result property="_gameType0" column="game_type_0"/>
+        <result property="_gameType1" column="game_type_1"/>
+        <result property="_ruleSetting" column="rule_setting"/>
+        <result property="_allPlayer" column="all_player"/>
+        <result property="_allTotalScore" column="all_total_score"/>
+        <result property="_costRoomCard" column="cost_room_card"/>
+        <result property="_actualRoundCount" column="actual_round_count"/>
+        <result property="_userId0" column="user_id_0"/>
+        <result property="_userId1" column="user_id_1"/>
+        <result property="_userId2" column="user_id_2"/>
+        <result property="_userId3" column="user_id_3"/>
+        <result property="_userId4" column="user_id_4"/>
+        <result property="_userId5" column="user_id_5"/>
+        <result property="_currState" column="curr_state"/>
+    </resultMap>
+
+    <insert id="insertOrElseUpdate">
+        <!-- 创建本周表和下周表 -->
+        CREATE TABLE IF NOT EXISTS t_${thisWeekTableNamePrefix}_room_log LIKE mj_log_template.t_template_room_log;
+        CREATE TABLE IF NOT EXISTS t_${nextWeekTableNamePrefix}_room_log LIKE mj_log_template.t_template_room_log;
+
+        <!-- 写入本周数据, XXX 注意: 后面还需要写入下周数据 -->
+        INSERT INTO t_${thisWeekTableNamePrefix}_room_log (
+            `room_uuid`,
+            `room_id`,
+            `owner_id`,
+            `club_id`,
+            `create_time`,
+            `over_time`,
+            `game_type_0`,
+            `game_type_1`,
+            `rule_setting`,
+            `all_player`,
+            `all_total_score`,
+            `cost_room_card`,
+            `actual_round_count`,
+            `user_id_0`,
+            `user_id_1`,
+            `user_id_2`,
+            `user_id_3`,
+            `user_id_4`,
+            `user_id_5`,
+            `curr_state`
+        ) VALUE (
+            #{_roomUUId},
+            #{_roomId},
+            #{_ownerId},
+            #{_clubId},
+            #{_createTime},
+            #{_overTime},
+            #{_gameType0},
+            #{_gameType1},
+            #{_ruleSetting},
+            #{_allPlayer},
+            #{_allTotalScore},
+            #{_costRoomCard},
+            #{_actualRoundCount},
+            #{_userId0},
+            #{_userId1},
+            #{_userId2},
+            #{_userId3},
+            #{_userId4},
+            #{_userId5},
+            #{_currState}
+        ) ON DUPLICATE KEY UPDATE
+            `over_time` = #{_overTime},
+            `all_total_score` = #{_allTotalScore},
+            `actual_round_count` = #{_actualRoundCount},
+            `curr_state` = #{_currState};
+
+        <!-- 写入下周数据 -->
+        INSERT INTO t_${nextWeekTableNamePrefix}_room_log (
+            `room_uuid`,
+            `room_id`,
+            `owner_id`,
+            `club_id`,
+            `create_time`,
+            `over_time`,
+            `game_type_0`,
+            `game_type_1`,
+            `rule_setting`,
+            `all_player`,
+            `all_total_score`,
+            `cost_room_card`,
+            `actual_round_count`,
+            `user_id_0`,
+            `user_id_1`,
+            `user_id_2`,
+            `user_id_3`,
+            `user_id_4`,
+            `user_id_5`,
+            `curr_state`
+        ) VALUE (
+            #{_roomUUId},
+            #{_roomId},
+            #{_ownerId},
+            #{_clubId},
+            #{_createTime},
+            #{_overTime},
+            #{_gameType0},
+            #{_gameType1},
+            #{_ruleSetting},
+            #{_allPlayer},
+            #{_allTotalScore},
+            #{_costRoomCard},
+            #{_actualRoundCount},
+            #{_userId0},
+            #{_userId1},
+            #{_userId2},
+            #{_userId3},
+            #{_userId4},
+            #{_userId5},
+            #{_currState}
+        ) ON DUPLICATE KEY UPDATE
+            `over_time` = #{_overTime},
+            `all_total_score` = #{_allTotalScore},
+            `actual_round_count` = #{_actualRoundCount},
+            `curr_state` = #{_currState};
+    </insert>
+
+    <select id="existThisWeekTable" resultType="java.lang.String">
+        SHOW TABLES LIKE 't_${_thisWeekTableNamePrefix}_room_log'
+    </select>
+
+    <select id="getEntityListByCond" resultMap="roomLogEntity">
+        SELECT * FROM t_${_thisWeekTableNamePrefix}_room_log
+        WHERE
+            1 = 1
+
+            <!-- 过滤用户 Id -->
+            <if test="_userId > 0">
+                AND (
+                    user_id_0 = #{_userId} OR
+                    user_id_1 = #{_userId} OR
+                    user_id_2 = #{_userId} OR
+                    user_id_3 = #{_userId} OR
+                    user_id_4 = #{_userId} OR
+                    user_id_5 = #{_userId}
+                )
+            </if>
+
+            <!-- 过滤亲友圈 Id -->
+            <if test="_clubId > 0">AND club_id = #{_clubId}</if>
+
+            <!-- 过滤游戏类型 -->
+            <if test="_gameType0 > 0">AND game_type_0 = #{_gameType0}</if>
+            <if test="_gameType1 > 0">AND game_type_1 = #{_gameType1}</if>
+        ORDER BY
+            create_time DESC
+
+        LIMIT
+            #{_limitOffset}, #{_limitCount};
+    </select>
+
+    <select id="getTotalCountByCond" resultType="java.lang.Integer">
+        SELECT
+            count(-1) AS total_count
+        FROM
+            t_${_thisWeekTableNamePrefix}_room_log
+        WHERE
+            1 = 1
+
+            <!-- 过滤用户 Id -->
+            <if test="_userId > 0">
+                AND (
+                user_id_0 = #{_userId} OR
+                user_id_1 = #{_userId} OR
+                user_id_2 = #{_userId} OR
+                user_id_3 = #{_userId} OR
+                user_id_4 = #{_userId} OR
+                user_id_5 = #{_userId}
+                )
+            </if>
+
+            <!-- 过滤亲友圈 Id -->
+            <if test="_clubId > 0">AND club_id = #{_clubId}</if>
+
+            <!-- 过滤游戏类型 -->
+            <if test="_gameType0 > 0">AND game_type_0 = #{_gameType0}</if>
+            <if test="_gameType1 > 0">AND game_type_1 = #{_gameType1}</if>
+        ;
+    </select>
+    
+    <select id="getEntityByRoomUUId" resultMap="roomLogEntity">
+        SELECT * FROM t_${_thisWeekTableNamePrefix}_room_log WHERE room_uuid = #{_roomUUId}
+    </select>
+</mapper>

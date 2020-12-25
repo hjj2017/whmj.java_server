@@ -1,0 +1,25 @@
+<assembly>
+    <id>all</id>
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <!--
+    <fileSets>
+        <fileSet>
+            <directory>bin</directory>
+            <outputDirectory>./</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>etc</directory>
+            <outputDirectory>./</outputDirectory>
+        </fileSet>
+    </fileSets>
+    //-->
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <scope>compile</scope>
+        </dependencySet>
+    </dependencySets>
+</assembly>

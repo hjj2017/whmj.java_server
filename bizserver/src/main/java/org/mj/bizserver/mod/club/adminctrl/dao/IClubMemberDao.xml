@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mj.bizserver.mod.club.adminctrl.dao.IClubMemberDao">
+
+    <select id="getRole" resultType="java.lang.Integer">
+        SELECT
+            role
+        FROM
+            t_club_member
+        WHERE
+            user_id = #{_userId}
+            AND club_id = #{_clubId};
+    </select>
+
+    <update id="updateCurrState">
+        UPDATE
+            t_club_member
+        SET
+            curr_state = #{_newState}
+        WHERE
+            user_id = #{_userId}
+            AND club_id = #{_clubId};
+    </update>
+
+    <update id="updateRole">
+        UPDATE
+            t_club_member
+        SET
+            role = #{_newRole}
+        WHERE
+            user_id = #{_userId}
+            AND club_id = #{_clubId};
+    </update>
+
+    <select id="getMemberCountByState" resultType="java.lang.Integer">
+        SELECT 
+            COUNT(-1) AS _count
+        FROM 
+            t_club_member
+        WHERE
+            club_id = #{_clubId}
+            AND curr_state IN
+                <foreach item="item" collection="_stateArray" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+        ;
+    </select>
+</mapper>

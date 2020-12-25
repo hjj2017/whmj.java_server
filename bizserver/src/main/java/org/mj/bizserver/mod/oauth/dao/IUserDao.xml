@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.mj.bizserver.mod.oauth.dao.IUserDao">
+    <resultMap id="userEntity" type="org.mj.bizserver.mod.oauth.dao.UserEntity">
+        <id property="_userId" column="user_id"/>
+        <result property="_userName" column="user_name"/>
+        <result property="_headImg" column="head_img"/>
+        <result property="_sex" column="sex"/>
+        <result property="_roomCard" column="room_card"/>
+        <result property="_createTime" column="create_time"/>
+        <result property="_clientVer" column="client_ver"/>
+        <result property="_lastLoginTime" column="last_login_time"/>
+        <result property="_lastLoginIp" column="last_login_ip"/>
+        <result property="_state" column="state"/>
+    </resultMap>
+
+    <select id="getEntityByColumnX" resultMap="userEntity">
+        SELECT * FROM t_user WHERE ${_columnName} = #{_columnVal} LIMIT 1;
+    </select>
+
+    <insert id="insertOrUpdate">
+        INSERT INTO t_user (
+            user_id,
+            user_name,
+            head_img,
+            sex,
+            room_card,
+            create_time,
+            client_ver,
+            last_login_time,
+            last_login_ip,
+            state
+        )
+        VALUE (
+            #{_userId},
+            #{_userName},
+            #{_headImg},
+            #{_sex},
+            #{_roomCard},
+            #{_createTime},
+            #{_clientVer},
+            #{_lastLoginTime},
+            #{_lastLoginIp},
+            #{_state}
+        ) ON DUPLICATE KEY UPDATE
+            user_name = #{_userName},
+            head_img = #{_headImg},
+            sex = #{_sex},
+            client_ver = #{_clientVer},
+            last_login_time = #{_lastLoginTime},
+            last_login_ip = #{_lastLoginIp};
+    </insert>
+
+    <update id="updateColumnXByUserId">
+        UPDATE t_user SET ${_columnName} = #{_columnVal} WHERE user_id = #{_userId}
+    </update>
+</mapper>

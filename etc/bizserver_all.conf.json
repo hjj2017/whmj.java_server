@@ -1,0 +1,73 @@
+{
+    "ukeyConf": {
+        "ukeyPassword": "123456",
+        "ukeyTTL": 2592000000
+    },
+
+    "redisXuite": {
+        "cache": {
+            "serverHost": "127.0.0.1",
+            "serverPort": 6379,
+            "dbIndex": 0,
+            "password": "root"
+        },
+
+        "pubsub": {
+            "serverHost": "127.0.0.1",
+            "serverPort": 6379,
+            "dbIndex": 0,
+            "password": "root"
+        }
+    },
+
+    "mySqlXuite": {
+        "gameDb": {
+            "serverHost": "127.0.0.1",
+            "serverPort": 3306,
+            "db": "mj_game",
+            "userName": "root",
+            "password": "root",
+            "initialSize": 1,
+            "minIdle": 1,
+            "maxActive": 32,
+            "maxWait": 2000
+        },
+        "logDb": {
+            "serverHost": "127.0.0.1",
+            "serverPort": 3306,
+            "db": "mj_log",
+            "userName": "root",
+            "password": "root",
+            "initialSize": 1,
+            "minIdle": 1,
+            "maxActive": 32,
+            "maxWait": 2000
+        }
+    },
+
+    "~~aliSMSAuth": {
+        "accessKeyId": "",
+        "accessKeySecret": "",
+        "signName": "",
+        "templateCode": "",
+        "workerCount": 8,
+        "timeoutMS": 8000
+    },
+
+    "~~aliIpv4Location": {
+        "accessKeyId": "",
+        "accessKeySecret": "",
+        "workerCount": 8,
+        "timeoutMS": 8000
+    },
+
+    "~~aliOSS": {
+        "endpoint": "",
+        "accessKeyId": "",
+        "accessKeySecret": "",
+        "bucket": "",
+        "basePath": "",
+        "workerCount": 8,
+        "timeoutMS": 8000
+    }
+}

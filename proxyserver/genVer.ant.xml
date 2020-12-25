@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<project basedir="." default="main" name="proxyserver">
+<!--
+// 生成版本文件
+///////////////////////////////////////////////////////////////////////
+//-->
+    <target name="main">
+        <!--// 取得分支版本号, 并构建版本字符串 //-->
+        <property name="CURR_VER" value="${CURR_VER}" />
+        <!--// 如果没设置 branchVer 则重新设置一个值, 默认值 = master //-->
+        <condition property="CURR_VER" value="DEV">
+            <not>
+                <isset property="CURR_VER" />
+            </not>
+        </condition>
+
+        <echo file="./src/main/java/org/mj/proxyserver/Ver.java">
+<![CDATA[
+//
+// 自动生成代码,
+// 请参考 genVer.ant.xml
+//
+package org.mj.proxyserver;
+
+// 版本号类
+final class Ver {
+    // 当前版本号
+    static public final String CURR = "${CURR_VER}";
+
+    // 私有化类默认构造器
+    private Ver() {
+    }
+}
+]]>
+        </echo>
+    </target>
+</project>
