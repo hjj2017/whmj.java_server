@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package msg;
+option java_package = "org.mj.bizserver.allmsg";
+
+// 
+// 大厅服务器消息编号
+enum HallServerMsgCodeDef {
+    _Dummy = 0;
+    _GetMyDetailzCmd = 201;
+    _GetMyDetailzResult = 202;
+    _GetJoinedRoomIdCmd = 203;
+    _GetJoinedRoomIdResult = 204;
+    _CreateRoomCmd = 205;
+    _CreateRoomResult = 206;
+    _JoinRoomCmd = 207;
+    _JoinRoomResult = 208;
+};
+
+// 键值定义
+message KeyAndVal {
+    // 关键字
+    sint32 key = 1;
+    // 数值
+    sint32 val = 2;
+}
+
+//
+// 获取我的详情
+///////////////////////////////////////////////////////////////////////
+// 指令
+message GetMyDetailzCmd {
+}
+
+// 结果
+message GetMyDetailzResult {
+    // 用户 Id
+    sint32 userId = 1;
+    // 用户名称
+    string userName = 2;
+    // 头像
+    string headImg = 3;
+    // 性别, -1 = 未知, 0 = 女, 1 = 男, 2 = 双性
+    sint32 sex = 4;
+    // 房卡数量
+    sint32 roomCard = 5;
+    // 最后登录 IP
+    string lastLoginIp = 6;
+}
+
+//
+// 获取已经加入的房间 Id
+///////////////////////////////////////////////////////////////////////
+// 指令
+message GetJoinedRoomIdCmd {
+}
+
+// 结果
+message GetJoinedRoomIdResult {
+    // 房间 Id, 如果返回 -1, 则说明没有加入任何房间
+    sint32 roomId = 1;
+}
+
+//
+// 创建房间
+///////////////////////////////////////////////////////////////////////
+// 指令
+message CreateRoomCmd {
+    // 游戏类型 0, 1 = 麻将, 2 = 扑克
+    sint32 gameType0 = 1;
+    // 游戏类型 1, 1001 = 威海麻将
+    sint32 gameType1 = 2;
+    // 规则数组
+    repeated KeyAndVal ruleItem = 3;
+}
+
+// 结果
+message CreateRoomResult {
+    // 房间 Id
+    sint32 roomId = 1;
+}
+
+//
+// 加入房间
+///////////////////////////////////////////////////////////////////////
+// 指令
+message JoinRoomCmd {
+    // 房间 Id
+    sint32 roomId = 1;
+}
+
+// 结果
+message JoinRoomResult {
+    // 房间 Id
+    sint32 roomId = 1;
+    // 游戏类型 0, 1 = 麻将, 2 = 扑克
+    sint32 gameType0 = 2;
+    // 游戏类型 1, 1001 = 威海麻将
+    sint32 gameType1 = 3;
+    // 规则数组
+    repeated KeyAndVal ruleItem = 4;
+}

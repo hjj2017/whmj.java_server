@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package msg;
+option java_package = "org.mj.bizserver.allmsg";
+
+// 
+// 聊天服务器消息编号
+enum ChatServerMsgCodeDef {
+    _Dummy = 0;
+    _SendQuickMsgCmd = 401;
+    _SendQuickMsgResult = 402;
+    _SendQuickMsgBroadcast = 403;
+    _SendEmojiCmd = 404;
+    _SendEmojiResult = 405;
+    _SendEmojiBroadcast = 406;
+};
+
+//
+// 发送快速消息
+///////////////////////////////////////////////////////////////////////
+// 指令
+message SendQuickMsgCmd {
+    // 消息 Id
+    sint32 msgId = 1;
+}
+
+// 结果
+message SendQuickMsgResult {
+    // 消息 Id
+    sint32 msgId = 1;
+    // 是否发送成功
+    bool ok = 2;
+}
+
+// 广播
+message SendQuickMsgBroadcast {
+    // 消息来自用户 Id
+    sint32 fromUserId = 1;
+    // 消息 Id
+    sint32 msgId = 2;
+    // 是否发送成功
+    bool ok = 3;
+}
+
+//
+// 发送表情
+///////////////////////////////////////////////////////////////////////
+// 指令
+message SendEmojiCmd {
+    // 表情 Id
+    sint32 emojiId = 1;
+}
+
+// 结果
+message SendEmojiResult {
+    // 表情 Id
+    sint32 emojiId = 1;
+    // 是否发送成功
+    bool ok = 2;
+}
+
+// 广播
+message SendEmojiBroadcast {
+    // 消息来自用户 Id
+    sint32 fromUserId = 1;
+    // 表情 Id
+    sint32 emojiId = 2;
+    // 是否发送成功
+    bool ok = 3;
+}

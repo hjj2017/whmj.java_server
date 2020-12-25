@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package msg;
+option java_package = "org.mj.bizserver.allmsg";
+
+// 
+// 通用消息编号
+enum CommMsgCodeDef {
+    _Dummy = 0;
+    _PingCmd = 1;
+    _PingResult = 2;
+    _ReconnCmd = 3;
+    _ReconnResult = 4;
+    _SuccezzHintResult = 11;
+    _ErrorHintResult = 12;
+    _CheckInTicketCmd = 13;
+    _CheckInTicketResult = 14;
+    _KickOutUserResult = 44;
+};
+
+//
+// Ping 命令
+///////////////////////////////////////////////////////////////////////
+// 指令
+message PingCmd {
+    sint32 pingId = 1;
+}
+
+// 结果
+message PingResult {
+    sint32 pingId = 1;
+}
+
+// 
+// 断线重连
+///////////////////////////////////////////////////////////////////////
+// 指令
+message ReconnCmd {
+    // 用户 Id
+    sint32 userId = 1;
+    // Ukey 字符串
+    string ukeyStr = 2;
+    // Ukey 过期时间
+    sint64 ukeyExpireAt = 3;
+}
+
+// 结果
+message ReconnResult {
+    // 用户 Id
+    sint32 userId = 1;
+    // Ukey 字符串
+    string ukeyStr = 2;
+    // Ukey 过期时间
+    sint64 ukeyExpireAt = 3;
+    // 是否成功
+    bool ok = 4;
+}
+
+//
+// 成功提示
+///////////////////////////////////////////////////////////////////////
+// 结果
+message SuccezzHintResult {
+    // 成功信息
+    string succezzInfo = 1;
+}
+
+//
+// 错误提示
+///////////////////////////////////////////////////////////////////////
+// 结果
+message ErrorHintResult {
+    // 错误编号
+    sint32 errorCode = 1;
+    // 错误消息
+    string errorMsg = 2;
+}
+
+//
+// 检票
+///////////////////////////////////////////////////////////////////////
+// 指令
+message CheckInTicketCmd {
+    // 用户 Id
+    sint32 userId = 1;
+    // 票据, 该票据是在登录服务器上生成的
+    string ticket = 2;
+}
+
+// 结果
+message CheckInTicketResult {
+    // 用户 Id
+    sint32 userId = 1;
+    // 成功标志
+    bool succezz = 2;
+}
+
+//
+// 踢出用户
+///////////////////////////////////////////////////////////////////////
+// 结果
+message KickOutUserResult {
+    // 理由
+    string reason = 1;
+}

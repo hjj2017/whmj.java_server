@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package msg;
+option java_package = "org.mj.bizserver.allmsg";
+
+// 
+// 账户服务器消息编号
+enum PassportServerMsgCodeDef {
+    _Dummy = 0;
+    _UserLoginCmd = 101;
+    _UserLoginResult = 102;
+    _GetSMSAuthCodeCmd = 103;
+    _GetSMSAuthCodeResult = 104;
+};
+
+//
+// 用户登录
+///////////////////////////////////////////////////////////////////////
+// 指令
+message UserLoginCmd {
+    // 登录方式,
+    // 0 = 测试登录, 1 = 访客登录, 2 = Ukey 登录, 1000 = 手机号+验证码登录, 2000 = 微信登录, 2010 = 微信公众号登录
+    sint32 loginMethod = 1;
+    // 密钥字符串, 
+    // 这里是一个 JSON 字符串, 可能会包含用户名称和密码
+    string propertyStr = 2;
+}
+
+// 结果
+message UserLoginResult {
+    // 用户 Id,
+    // 如果是 -1 则说明登录失败
+    sint32 userId = 1;
+    // 用户名称
+    string userName = 2;
+    // 入场票据
+    string ticket = 3;
+    // 数字证书字符串
+    string ukeyStr = 4;
+    // 数字正说过期时间
+    sint64 ukeyExpireAt = 5;
+}
+
+//
+// 获取短信验证码
+///////////////////////////////////////////////////////////////////////
+// 指令
+message GetSMSAuthCodeCmd {
+    // 手机号
+    string phoneNumber = 1;
+}
+
+// 结果
+message GetSMSAuthCodeResult {
+    // 手机号
+    string phoneNumber = 1;
+    // 成功标志
+    bool succezz = 2;
+}

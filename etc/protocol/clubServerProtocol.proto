@@ -1,0 +1,498 @@
+syntax = "proto3";
+
+package msg;
+option java_package = "org.mj.bizserver.allmsg";
+
+// 
+// 亲友圈服务器消息编号
+enum ClubServerMsgCodeDef {
+    _Dummy = 0;
+    _GetJoinedClubListCmd = 301;
+    _GetJoinedClubListResult = 302;
+    _CreateClubCmd = 303;
+    _CreateClubResult = 304;
+    _JoinClubCmd = 305;
+    _JoinClubResult = 306;
+    _GetClubDetailzCmd = 307;
+    _GetClubDetailzResult = 308;
+    _GetMemberInfoListCmd = 309;
+    _GetMemberInfoListResult = 310;
+    _GetTableListCmd = 311;
+    _GetTableListResult = 312;
+    _GetTableDetailzCmd = 313;
+    _GetTableDetailzResult = 314;
+    _CreateTableCmd = 315;
+    _CreateTableResult = 316;
+    _JoinTableCmd = 317;
+    _JoinTableResult = 318;
+
+    // 
+    // 亲友圈的管理功能
+    _ApprovalToJoinCmd = 321;
+    _ApprovalToJoinResult = 322;
+    _DismissAMemberCmd = 323;
+    _DismissAMemberResult = 324;
+    _QuitClubCmd = 325;
+    _QuitClubResult = 326;
+    _ModifyFixGameCmd = 327;
+    _ModifyFixGameResult = 328;
+    _ExchangeRoomCardCmd = 329;
+    _ExchangeRoomCardResult = 330;
+
+    // 
+    // 以下消息是一个比较特殊的存在!
+    // 主要是负责告知客户端有哪些牌桌发生变化了...
+    // XXX 注意, 在这里只会把发生变化的牌桌的亲友圈 Id 和牌桌序号告知前端.
+    // 具体变成什么样子了, 这里并不负责!
+    // 这个需要客户端自己去询问...
+    // 
+    // 这就好比狄仁杰问元芳: "此事你怎么看?"
+    // 元芳答道: "此事定有蹊跷!"
+    // 那具体有什么蹊跷呢? 只能是狄仁杰自己去查了...
+    // 元芳就等于 AClubTableChangedBroadcast, 狄仁杰就等于客户端.
+    // 当亲友圈牌桌发生变化时, 
+    // 元芳 ( AClubTableChangedBroadcast ) 就通知狄仁杰 ( 客户端 ): "大人, 有蹊跷!".
+    // 狄仁杰 ( 客户端 ) 收到通知之后, 就去调查 ( 通过发送 GetTableDetailzCmd 消息 ), 看看发生了什么蹊跷?
+    // 
+    _StartTableChangedListenCmd = 371;
+    _StopTableChangedListenCmd = 372;
+    _AClubTableChangedBroadcast = 373;
+};
+
+// 键值定义
+message KeyAndVal {
+    // 关键字
+    sint32 key = 1;
+    // 数值
+    sint32 val = 2;
+}
+
+// ( 牌桌上的 ) 玩家
+message Player {
+    // 用户 Id
+    sint32 userId = 1;
+    // 座位索引, 从 0 起算
+    sint32 atSeatIndex = 2;
+    // 用户名称
+    string userName = 3;
+    // 头像
+    string headImg = 4;
+    // 性别, -1 = 未知, 0 = 女, 1 = 男, 2 = 双性
+    sint32 sex = 5;
+}
+
+// 牌桌
+message Table {
+    // 牌桌序号
+    sint32 seqNum = 1;
+    // 对应的房间 Id
+    sint32 roomId = 2;
+    // 游戏类型 0
+    sint32 gameType0 = 3;
+    // 游戏类型 1
+    sint32 gameType1 = 4;
+    // 规则条目数组
+    repeated KeyAndVal ruleItem = 5;
+    // 最大局数
+    sint32 maxRound = 6;
+    // 当前局数
+    sint32 currRound = 7;
+    // 最大玩家数量
+    sint32 maxPlayer = 8;
+    // 玩家列表
+    repeated Player player = 9;
+}
+
+//
+// 获取已经加入的亲友圈列表
+///////////////////////////////////////////////////////////////////////
+// 指令
+message GetJoinedClubListCmd {
+}
+
+// 结果
+message GetJoinedClubListResult {
+    // 已经加入的亲友圈
+    message JoinedClub {
+        // 亲友圈 Id
+        sint32 clubId = 1;
+        // 亲友圈名称
+        string clubName = 2;
+        // 创建人 Id
+        sint32 creatorId = 3;
+        // 创建人名称
+        string creatorName = 4;
+        // 创建人头像
+        string creatorHeadImg = 5;
+        // 创建人性别
+        sint32 creatorSex = 6;
+        // 亲友圈人数
+        sint32 numOfPeople = 7;
+        // 游戏中的数量 ( 桌数 )
+        sint32 numOfGaming = 8;
+        // 等待中的数量 ( 桌数 )
+        sint32 numOfWaiting = 9;
+    }
+
+    // 已经加入的亲友圈列表
+    repeated JoinedClub joinedClub = 1;
+}
+
+//
+// 创建亲友圈
+///////////////////////////////////////////////////////////////////////
+// 指令
+message CreateClubCmd {
+    // 亲友圈名称
+    string clubName = 1;
+}
+
+// 结果
+message CreateClubResult {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+    // 亲友圈名称
+    string clubName = 2;
+}
+
+// 
+// 加入亲友圈
+///////////////////////////////////////////////////////////////////////
+// 指令
+message JoinClubCmd {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+}
+
+// 结果
+message JoinClubResult {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+    // 是否成功
+    bool succezz = 2;
+}
+
+//
+// 获取亲友圈详情
+///////////////////////////////////////////////////////////////////////
+// 指令
+message GetClubDetailzCmd {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+}
+
+// 结果
+message GetClubDetailzResult {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+    // 亲友圈名称
+    string clubName = 2;
+    // 创建人 Id
+    sint32 creatorId = 3;
+    // 创建人名称
+    string creatorName = 4;
+    // 创建人头像
+    string creatorHeadImg = 5;
+    // 创建人性别
+    sint32 creatorSex = 6;
+    // 创建时间
+    sint64 createTime = 7;
+    // 房卡数量
+    sint32 roomCard = 8;
+    // 固定玩法
+    repeated FixGameX fixGameX = 9;
+    // 亲友圈人数
+    sint32 numOfPeople = 10;
+    // 游戏中的数量 ( 桌数 )
+    sint32 numOfGaming = 11;
+    // 等待中的数量 ( 桌数 )
+    sint32 numOfWaiting = 12;
+    // 我当前的角色, 0 = 普通成员, 1 = 管理员, 2 = 超级管理员
+    sint32 myRole = 13;
+
+    // 固定玩法
+    message FixGameX {
+        // 固定玩法索引
+        sint32 index = 1;
+        // 游戏类型 0, 1 = 麻将, 2 = 扑克
+        sint32 gameType0 = 2;
+        // 游戏类型 1, 1001 = 威海麻将
+        sint32 gameType1 = 3;
+        // 规则条目数组
+        repeated KeyAndVal ruleItem = 4;
+    }
+}
+
+//
+// 获取亲友圈成员列表
+///////////////////////////////////////////////////////////////////////
+// 指令
+message GetMemberInfoListCmd {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+    // 页面索引
+    sint32 pageIndex = 2;
+    // 页面大小
+    sint32 pageSize = 3;
+}
+
+// 结果
+message GetMemberInfoListResult {
+    // 亲友圈成员信息
+    message MemberInfo {
+        // 用户 Id
+        sint32 userId = 1;
+        // 角色
+        sint32 role = 2;
+        // 用户名称
+        string userName = 3;
+        // 头像
+        string headImg = 4;
+        // 性别, -1 = 未知, 0 = 女, 1 = 男, 2 = 双性
+        sint32 sex = 5;
+        // 加入时间
+        sint64 joinTime = 6;
+        // 最后登录时间
+        sint64 lastLoginTime = 7;
+        // 当前状态, 0 = 等待审核, 1 = 正常状态, -1 = 拒绝, -2 = ( 主动 ) 退出, -44 = 开除
+        sint32 currState = 8;
+    }
+
+    // 亲友圈 Id
+    sint32 clubId = 1;
+    // 页面索引
+    sint32 pageIndex = 2;
+    // 总记录数
+    sint32 totalCount = 3;
+    // 亲友圈成员信息列表
+    repeated MemberInfo memberInfo = 4;
+}
+
+// 
+// 获取牌桌列表
+///////////////////////////////////////////////////////////////////////
+// 指令
+message GetTableListCmd {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+    // 页面索引
+    sint32 pageIndex = 2;
+}
+
+// 结果
+message GetTableListResult {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+    // 页面索引
+    sint32 pageIndex = 2;
+    // 最大牌桌数量, 这个根据代理级别而定, 一般是 10 的倍数
+    sint32 maxNumOfTablez = 3;
+    // 牌桌列表
+    repeated Table table = 4;
+}
+
+// 
+// 获取牌桌详情
+///////////////////////////////////////////////////////////////////////
+// 指令
+message GetTableDetailzCmd {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+    // 牌桌序号
+    sint32 seqNum = 2;
+}
+
+// 结果
+message GetTableDetailzResult {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+    // 牌桌序号
+    sint32 seqNum = 2;
+    // 牌桌数据
+    Table table = 3;
+}
+
+//
+// 创建亲友圈牌桌
+///////////////////////////////////////////////////////////////////////
+// 指令
+message CreateTableCmd {
+    // 游戏类型 0, 1 = 麻将, 2 = 扑克
+    sint32 gameType0 = 1;
+    // 游戏类型 1, 1001 = 威海麻将
+    sint32 gameType1 = 2;
+    // 规则数组
+    repeated KeyAndVal ruleItem = 3;
+    // 亲友圈 Id
+    sint32 clubId = 4;
+    // 牌桌序号
+    sint32 seqNum = 5;
+    // 使用固定玩法
+    sint32 usingFixGameX = 6;
+}
+
+// 结果
+message CreateTableResult {
+    // 房间 Id
+    sint32 roomId = 1;
+}
+
+//
+// 加入牌桌
+///////////////////////////////////////////////////////////////////////
+// 指令
+message JoinTableCmd {
+    // 房间 Id
+    sint32 roomId = 1;
+}
+
+// 结果
+message JoinTableResult {
+    // 房间 Id
+    sint32 roomId = 1;
+    // 游戏类型 0, 1 = 麻将, 2 = 扑克
+    sint32 gameType0 = 2;
+    // 游戏类型 1, 1001 = 威海麻将
+    sint32 gameType1 = 3;
+    // 规则数组
+    repeated KeyAndVal ruleItem = 4;
+    // 亲友圈 Id
+    sint32 clubId = 5;
+    // 牌桌序号
+    sint32 seqNum = 6;
+}
+
+//
+// 接受加入申请
+///////////////////////////////////////////////////////////////////////
+// 指令
+message ApprovalToJoinCmd {
+    // 用户 Id
+    sint32 userId = 1;
+    // 亲友圈 Id
+    sint32 clubId = 2;
+    // 同意或者拒绝
+    bool yesOrNo = 3;
+}
+
+// 结果
+message ApprovalToJoinResult {
+    // 用户 Id
+    sint32 userId = 1;
+    // 亲友圈 Id
+    sint32 clubId = 2;
+    // 是否成功
+    bool succezz = 3;
+}
+
+//
+// 开除一个成员
+///////////////////////////////////////////////////////////////////////
+// 指令
+message DismissAMemberCmd {
+    // 用户 Id
+    sint32 userId = 1;
+    // 亲友圈 Id
+    sint32 clubId = 2;
+}
+
+// 结果
+message DismissAMemberResult {
+    // 用户 Id
+    sint32 userId = 1;
+    // 亲友圈 Id
+    sint32 clubId = 2;
+    // 是否成功
+    bool succezz = 3;
+}
+
+//
+// 退出亲友圈
+///////////////////////////////////////////////////////////////////////
+// 指令
+message QuitClubCmd {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+}
+
+// 结果
+message QuitClubResult {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+    // 退出成功? true = 成功, false = 失败
+    bool succezz = 2;
+}
+
+// 
+// 修改固定玩法
+///////////////////////////////////////////////////////////////////////
+// 指令
+message ModifyFixGameCmd {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+    // 固定玩法索引, 
+    sint32 index = 2;
+    // 游戏类型 0
+    // 如果是 -1 则说明删除固定玩法
+    sint32 gameType0 = 3;
+    // 游戏类型 1
+    // 如果是 -1 则说明删除固定玩法
+    sint32 gameType1 = 4;
+    // 规则条目数组
+    // 如果是空数组则说明删除固定玩法
+    repeated KeyAndVal ruleItem = 5;
+}
+
+// 结果
+message ModifyFixGameResult {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+    // 固定玩法索引
+    sint32 index = 2;
+    // 修改成功? true = 成功, false = 失败
+    bool succezz = 3;
+}
+
+//
+// 亲友圈充值房卡
+///////////////////////////////////////////////////////////////////////
+// 指令
+message ExchangeRoomCardCmd {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+    // 房卡数量
+    sint32 roomCard = 2;
+}
+
+// 结果
+message ExchangeRoomCardResult {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+    // 房卡数量
+    sint32 roomCard = 2;
+    // 充值成功? true = 成功, false = 失败
+    bool succezz = 3;
+}
+
+// 
+// 监听牌桌变化指令
+///////////////////////////////////////////////////////////////////////
+// 指令
+message StartTableChangedListenCmd {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+}
+
+// 指令
+message StopTableChangedListenCmd {
+}
+
+// 亲友圈牌桌变化广播
+message AClubTableChangedBroadcast {
+    // 亲友圈 Id
+    sint32 clubId = 1;
+    // 牌桌序号
+    sint32 tableSeqNum = 2;
+    // 房间 Id
+    sint32 roomId = 3;
+}

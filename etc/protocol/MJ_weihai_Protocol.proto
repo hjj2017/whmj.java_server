@@ -1,0 +1,960 @@
+syntax = "proto3";
+
+package msg;
+option java_package = "org.mj.bizserver.allmsg";
+option java_outer_classname = "MJ_weihai_Protocol";
+
+// 
+// 威海麻将消息编号
+enum MJ_weihai_MsgCodeDef {
+    _Dummy = 0;
+    _JoinRoomBroadcast = 1001;
+    _DissolveTheRoomCmd = 1002;
+    _DissolveTheRoomResult = 1003;
+    _DissolveTheRoomBroadcast = 1004;
+    _DissolutionVoteCmd = 1005;
+    _DissolutionVoteResult = 1006;
+    _DissolutionVoteBroadcast = 1007;
+    _DissolveSuccezzBroadcast = 1008;
+    _FireAPlayerCmd = 1009;
+    _FireAPlayerResult = 1010;
+    _FireAPlayerBroadcast = 1011;
+    _QuitRoomCmd = 1012;
+    _QuitRoomResult = 1013;
+    _QuitRoomBroadcast = 1014;
+    _SyncRoomDataCmd = 1015;
+    _SyncRoomDataResult = 1016;
+    _ReportGeoLocationCmd = 1017;
+    _ReportGeoLocationResult = 1018;
+    _MeasureGeoDistanceCmd = 1019;
+    _MeasureGeoDistanceResult = 1020;
+    _PrepareCmd = 1021;
+    _PrepareResult = 1022;
+    _PrepareBroadcast = 1023;
+    _OfficialStartCmd = 1024;
+    _OfficialStartResult = 1025;
+    _OfficialStartBroadcast = 1026;
+    _SelectPiaoHintBroadcast = 1027;
+    _DingPiaoCmd = 1028;
+    _DingPiaoResult = 1029;
+    _DingPiaoBroadcast = 1030;
+    _RoundStartedBroadcast = 1031;
+    _MahjongInHandChangedResult = 1032;
+    _MahjongInHandChangedBroadcast = 1033;
+    _MahjongMoPaiResult = 1034;
+    _MahjongMoPaiBroadcast = 1035;
+    _RedirectActUserIdBroadcast = 1036;
+    _OpRemainTimeBroadcast = 1037;
+    _MahjongChuPaiCmd = 1038;
+    _MahjongChuPaiResult = 1039;
+    _MahjongChuPaiBroadcast = 1040;
+    _MahjongChiPengGangHuOpHintResult = 1041;
+    _MahjongChiCmd = 1042;
+    _MahjongChiResult = 1043;
+    _MahjongChiBroadcast = 1044;
+    _MahjongPengCmd = 1045;
+    _MahjongPengResult = 1046;
+    _MahjongPengBroadcast = 1047;
+    _MahjongGangCmd = 1048;
+    _MahjongMingGangResult = 1049;
+    _MahjongAnGangResult = 1050;
+    _MahjongBuGangResult = 1051;
+    _MahjongMingGangBroadcast = 1052;
+    _MahjongAnGangBroadcast = 1053;
+    _MahjongBuGangBroadcast = 1054;
+    _MahjongLiangDaoCmd = 1055;
+    _MahjongLiangDaoResult = 1056;
+    _MahjongLiangDaoBroadcast = 1057;
+    _MahjongHuCmd = 1058;
+    _MahjongHuOrZiMoResult = 1059;
+    _MahjongHuOrZiMoBroadcast = 1060;
+    _MahjongGuoCmd = 1061;
+    _MahjongGuoResult = 1062;
+    _MahjongHuangZhuangBroadcast = 1063;
+    _RoundSettlementBroadcast = 1064;
+    _RoomSettlementBroadcast = 1065;
+    _MahjongLiangFengCmd = 1066;
+    _MahjongLiangFengResult = 1067;
+    _MahjongLiangFengBroadcast = 1068;
+    _MahjongBuFengCmd = 1069;
+    _MahjongBuFengResult = 1070;
+    _MahjongBuFengBroadcast = 1071;
+    _MahjongLiangGangDingBroadcast = 1072;
+};
+
+// 键值定义
+message KeyAndVal {
+    // 关键字
+    sint32 key = 1;
+    // 数值
+    sint32 val = 2;
+}
+
+// 麻将吃碰杠 ( 包括明杠、暗杠、补杠 )
+message MahjongChiPengGang {
+    // 种类, 
+    // 1 = 吃, 2 = 碰, 3 = 明杠, 4 = 暗杠, 5 = 补杠
+    sint32 kind = 1;
+
+    // 获取麻将牌 X,
+    // 这张牌意义比较特殊!
+    // 如果是吃牌, tX 代表吃掉的是哪一张牌;
+    // 如果是碰牌, tX 代表碰到的是哪一张牌;
+    // 如果是杠牌, tX 代表杠下的是哪一张牌;
+    sint32 tX = 2;
+
+    // 第一张牌 ( 记录吃牌时用到 )
+    sint32 t0 = 3;
+    // 第二张牌 ( 记录吃牌时用到 )
+    sint32 t1 = 4;
+    // 第三张牌 ( 记录吃牌时用到 )
+    sint32 t2 = 5;
+
+    // 来自用户 Id
+    sint32 fromUserId = 6;
+}
+
+// 麻将亮风
+// XXX 注意: 这是威海麻将特色玩法
+message MahjongLiangFeng {
+    // 种类,
+    // 1 = 风牌 ( 东南西北 ), 2 = 箭牌 ( 中发白 ), 3 = 乱锚
+    sint32 kind = 1;
+    // 东风数量
+    sint32 numOfDongFeng = 2;
+    // 南风数量
+    sint32 numOfNanFeng = 3;
+    // 西风数量
+    sint32 numOfXiFeng = 4;
+    // 北风数量
+    sint32 numOfBeiFeng = 5;
+    // 红中数量
+    sint32 numOfHongZhong = 6;
+    // 发财数量
+    sint32 numOfFaCai = 7;
+    // 白板数量
+    sint32 numOfBaiBan = 8;
+}
+
+// 麻将玩家
+message Player {
+    // 用户 Id
+    sint32 userId = 1;
+    // 用户名称
+    string userName = 2;
+    // 用户头像
+    string headImg = 3;
+    // 性别, -1 = 未知, 0 = 女, 1 = 男
+    sint32 sex = 4;
+    // 客户端 IP 地址
+    string clientIpAddr = 5;
+    // 当前分数
+    sint32 currScore = 6;
+    // 总分数
+    sint32 totalScore = 7;
+    // 座位索引
+    sint32 seatIndex = 8;
+    // 飘几, -1 = 未知, 0 = 不飘, 1 = 飘_1, 2 = 飘_2, 3 = 飘_3, 4 = 飘_4
+    sint32 piaoX = 9;
+    // 房主标志
+    bool roomOwnerFlag = 10;
+    // 庄家标志
+    bool zhuangJiaFlag = 11;
+    // 准备标记
+    bool readyFlag = 12;
+    // 离线标记
+    bool offlineFlag = 13;
+    // 手中的牌
+    repeated sint32 mahjongInHand = 14;
+    // 摸到的牌
+    sint32 mahjongMoPai = 15;
+    // 打出去的牌
+    repeated sint32 mahjongOutput = 16;
+    // 麻将吃碰杠 ( 包括明杠、暗杠、补杠 )
+    repeated MahjongChiPengGang mahjongChiPengGang = 17;
+    // 麻将亮风
+    // XXX 注意: 这是威海麻将特色玩法
+    MahjongLiangFeng mahjongLiangFeng = 18;
+}
+
+//
+// 加入房间
+///////////////////////////////////////////////////////////////////////
+
+// 广播
+message JoinRoomBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 用户名称
+    string userName = 2;
+    // 用户头像
+    string headImg = 3;
+    // 性别, -1 = 未知, 0 = 女, 1 = 男
+    sint32 sex = 4;
+    // 客户端 IP 地址
+    string clientIpAddr = 5;
+    // 座位索引
+    sint32 seatIndex = 6;
+    // 当前分数
+    sint32 currScore = 7;
+    // 总分数
+    sint32 totalScore = 8;
+}
+
+// 
+// 解散房间
+///////////////////////////////////////////////////////////////////////
+// 指令
+message DissolveTheRoomCmd {
+    // 解散原因
+    sint32 reason = 1;
+}
+
+// 结果
+message DissolveTheRoomResult {
+    // 解散原因
+    sint32 reason = 1;
+    // 是否成功
+    bool ok = 2;
+}
+
+// 广播
+message DissolveTheRoomBroadcast {
+    // 等待用户
+    message Waiting4User {
+        // 用户 Id
+        sint32 userId = 1;
+        // 用户名称
+        string userName = 2;
+        // 头像
+        string headImg = 3;
+        // 房主标记
+        bool roomOwnerFlag = 4;
+        // 座位索引
+        sint32 seatIndex = 5;
+        // 是否同意, -1 = 未选择, 0 = 不同意, 1 = 同意
+        sint32 yes = 6;
+    }
+
+    // ( 申请人 ) 用户 Id
+    sint32 fromUserId = 1;
+    // ( 申请人 ) 用户名称
+    string fromUserName = 2;
+    // 解散愿意
+    sint32 reason = 3;
+    /** 当前牌局索引 */
+    sint32 currRoundIndex = 4;
+    // 剩余时间 ( 单位 = 毫秒 )
+    sint32 remainTime = 5;
+    // 等待用户
+    repeated Waiting4User waiting4User = 6;
+}
+
+//
+// 解散投票
+///////////////////////////////////////////////////////////////////////
+// 指令
+message DissolutionVoteCmd {
+    // 是否同意, -1 = 未选择, 0 = 不同意, 1 = 同意
+    sint32 yes = 1;
+}
+
+message DissolutionVoteResult {
+    // 是否同意, -1 = 未选择, 0 = 不同意, 1 = 同意
+    sint32 yes = 1;
+    // 是否成功, 
+    // 也就是系统是否允许你选择 "同意" 或 "不同意"
+    bool ok = 2;
+}
+
+// 广播
+message DissolutionVoteBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 是否同意, -1 = 未选择, 0 = 不同意, 1 = 同意
+    sint32 yes = 2;
+}
+
+// 
+// 解散房间成功
+///////////////////////////////////////////////////////////////////////
+// 广播
+message DissolveSuccezzBroadcast {
+}
+
+//
+// 踢出一个玩家
+///////////////////////////////////////////////////////////////////////
+// 指令
+message FireAPlayerCmd {
+    // 目标用户 Id
+    sint32 targetUserId = 1;
+}
+
+// 结果
+message FireAPlayerResult {
+    // 目标用户 Id
+    sint32 targetUserId = 1;
+    // 是否成功
+    bool ok = 2;
+}
+
+// 广播
+message FireAPlayerBroadcast {
+    // 目标用户 Id
+    sint32 targetUserId = 1;
+}
+
+//
+// 退出房间
+///////////////////////////////////////////////////////////////////////
+// 指令
+message QuitRoomCmd {
+}
+
+// 结果
+message QuitRoomResult {
+    // 是否成功,
+    // 也就是系统是否允许你退出房间
+    bool ok = 1;
+}
+
+// 广播
+message QuitRoomBroadcast {
+    // 来自用户 Id
+    sint32 fromUserId = 1;
+}
+
+// 
+// 同步房间数据
+///////////////////////////////////////////////////////////////////////
+// 指令
+message SyncRoomDataCmd {
+}
+
+// 结果
+message SyncRoomDataResult {
+    // 房间 Id
+    sint32 roomId = 1;
+    // 游戏类型 0, 1 = 麻将, 2 = 扑克
+    sint32 gameType0 = 2;
+    // 游戏类型 1, 1001 = 威海麻将
+    sint32 gameType1 = 3;
+    // 创建创建时间
+    sint64 roomCreateTime = 4;
+    // 房主用户 Id
+    sint32 roomOwnerId = 5;
+    // 规则列表
+    repeated KeyAndVal ruleItem = 6;
+    // 当前牌局索引
+    sint32 currRoundIndex = 7;
+    // 当前行动用户 Id
+    sint32 currActUserId = 8;
+    // 剩余卡牌数量
+    sint32 remainCardNum = 9;
+    // 当前操作剩余时间, 单位 = 秒
+    sint32 remainTime = 10;
+    // 玩家列表
+    repeated Player player = 11;
+}
+
+//
+// 上报地理位置
+///////////////////////////////////////////////////////////////////////
+// 指令
+message ReportGeoLocationCmd {
+    /** 纬度 */
+    float latitude = 1;
+    /** 经度 */
+    float longitude = 2;
+    /** 海拔 */
+    float altitude = 3;
+    /** 客户端 IP 地址 */
+    string clientIpAddr = 4;
+}
+
+// 结果
+message ReportGeoLocationResult {
+    // 是否成功
+    bool ok = 1;
+}
+
+//
+// 测量地理距离
+///////////////////////////////////////////////////////////////////////
+// 指令
+message MeasureGeoDistanceCmd {
+}
+
+// 结果
+message MeasureGeoDistanceResult {
+    // 距离条目
+    message GeoDistanceItem {
+        // 用户 Id A
+        sint32 userIdA = 1;
+        // 用户 Id B
+        sint32 userIdB = 2;
+        // 地理距离, 单位 = 千米
+        float distance = 3;
+        // 相同 IP 地址
+        bool sameIpAddr = 4;
+    }
+
+    // 地理距离条目
+    repeated GeoDistanceItem geoDistanceItem = 1;
+}
+
+//
+// 准备
+///////////////////////////////////////////////////////////////////////
+// 指令
+message PrepareCmd {
+    // 是否准备好, 0 = 取消准备, 1 = 准备好
+    sint32 yes = 1;
+}
+
+// 结果
+message PrepareResult {
+    // 是否准备好, 0 = 取消准备, 1 = 准备好
+    sint32 yes = 1;
+    // 是否成功
+    bool ok = 2;
+}
+
+// 广播
+message PrepareBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 是否准备好, 0 = 取消准备, 1 = 准备好
+    sint32 yes = 2;
+    // 是否全部玩家都已经准备好
+    bool allReady = 3;
+}
+
+//
+// 正式开始
+///////////////////////////////////////////////////////////////////////
+// 指令
+message OfficialStartCmd {
+}
+
+// 结果
+message OfficialStartResult {
+    // 是否成功
+    bool ok = 1;
+}
+
+// 广播
+message OfficialStartBroadcast {
+}
+
+//
+// 选飘提示
+///////////////////////////////////////////////////////////////////////
+// 广播
+message SelectPiaoHintBroadcast {
+    // 不飘
+    bool buPiao = 1;
+    // 飘1
+    bool piao1 = 2;
+    // 飘2
+    bool piao2 = 3;
+    // 飘3
+    bool piao3 = 4;
+    // 飘3
+    bool piao4 = 5;
+}
+
+//
+// 定飘
+///////////////////////////////////////////////////////////////////////
+// 指令
+message DingPiaoCmd {
+    // 飘几
+    sint32 piaoX = 1;
+}
+
+// 结果
+message DingPiaoResult {
+    // 飘几
+    sint32 piaoX = 1;
+    // 是否成功
+    bool ok = 2;
+}
+
+// 广播
+message DingPiaoBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 飘几
+    sint32 piaoX = 2;
+    // 是否成功
+    bool ok = 3;
+}
+
+// 
+// 开局
+///////////////////////////////////////////////////////////////////////
+// 广播
+message RoundStartedBroadcast {
+    // 当前局数
+    sint32 currRoundIndex = 1;
+    // 庄家用户 Id
+    sint32 zhuangJiaUserId = 2;
+}
+
+// 
+// 手牌变化
+///////////////////////////////////////////////////////////////////////
+// 结果
+message MahjongInHandChangedResult {
+    // 麻将牌数值列表
+    repeated sint32 mahjongInHand = 1;
+    // 麻将摸牌
+    sint32 moPai = 2;
+}
+
+// 广播
+message MahjongInHandChangedBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 麻将牌数值列表, 多半情况是一组 -1
+    repeated sint32 mahjongInHand = 2;
+    // 麻将摸牌
+    sint32 moPai = 3;
+}
+
+// 
+// 摸牌
+///////////////////////////////////////////////////////////////////////
+// 结果
+message MahjongMoPaiResult {
+    // 麻将牌数值
+    sint32 t = 1;
+}
+
+// 广播
+message MahjongMoPaiBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 麻将牌数值, 多半情况是 -1
+    sint32 t = 2;
+}
+
+//
+// 重定向活动用户 Id
+///////////////////////////////////////////////////////////////////////
+// 广播
+message RedirectActUserIdBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 座位索引 ( 辅助字段, 帮助客户端定位 )
+    sint32 seatIndex = 2;
+    // 当前牌局索引, XXX 注意: 是从 0 开始的
+    sint32 currRoundIndex = 3;
+    // 剩余卡牌数量
+    sint32 remainCardNum = 4;
+    // 剩余时间 ( 秒数 )
+    sint32 remainTime = 5;
+}
+
+// 
+// 操作剩余时间
+///////////////////////////////////////////////////////////////////////
+// 广播
+message OpRemainTimeBroadcast {
+    // 毫秒数
+    sint32 ms = 1;
+}
+
+//
+// 出牌
+///////////////////////////////////////////////////////////////////////
+// 指令
+message MahjongChuPaiCmd {
+    // 麻将牌数值
+    sint32 t = 1;
+}
+
+// 结果
+message MahjongChuPaiResult {
+    // 麻将牌数值,
+    // -1 则说明出牌失败
+    sint32 t = 1;
+}
+
+// 广播
+message MahjongChuPaiBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 麻将牌数值
+    sint32 t = 2;
+}
+
+// 
+// 吃碰杠胡操作提示
+///////////////////////////////////////////////////////////////////////
+// 吃牌选择题
+message ChiChoiceQuestion {
+    // 要吃的是哪一张牌
+    sint32 chiT = 1;
+    // 显示选项 A, 例如: 1 2 [3]
+    bool displayOptionA = 2;
+    // 显示选项 B, 例如: 2 [3] 4
+    bool displayOptionB = 3;
+    // 显示选项 C, 例如: [3] 4 5
+    bool displayOptionC = 4;
+}
+
+// 亮风选择题
+message LiangFengChoiceQuestion {
+    // 乱锚
+    bool luanMao = 1;
+    // 显示选项 - 东风
+    bool displayOptionDongFeng = 2;
+    // 显示选项 - 南风
+    bool displayOptionNanFeng = 3;
+    // 显示选项 - 西风
+    bool displayOptionXiFeng = 4;
+    // 显示选项 - 北风
+    bool displayOptionBeiFeng = 5;
+    // 显示选项 - 红中
+    bool displayOptionHongZhong = 6;
+    // 显示选项 - 发财
+    bool displayOptionFaCai = 7;
+    // 显示选项 - 白板
+    bool displayOptionBaiBan = 8;
+}
+
+// 结果
+message MahjongChiPengGangHuOpHintResult {
+    // 吃牌操作提示
+    bool opHintChi = 1;
+    // 吃牌选择题
+    ChiChoiceQuestion chiChoiceQuestion = 2;
+    // 碰牌操作提示
+    bool opHintPeng = 3;
+    // 杠牌操作提示
+    bool opHintGang = 4;
+    // 胡牌操作提示
+    bool opHintHu = 5;
+    // 亮风操作提示
+    bool opHintLiangFeng = 6;
+    // 亮风选择题
+    LiangFengChoiceQuestion liangFengChoiceQuestion = 7;
+    // 补风操作提示
+    bool opHintBuFeng = 8;
+}
+
+// 
+// 吃
+///////////////////////////////////////////////////////////////////////
+// 指令
+message MahjongChiCmd {
+    // 选择选项, 0 = 选择 A, 1 = 选择 B, 2 = 选择 C
+    sint32 selectedOption = 1;
+}
+
+// 结果
+message MahjongChiResult {
+    // 麻将吃牌
+    MahjongChiPengGang mahjongChi = 1;
+}
+
+// 广播
+message MahjongChiBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 麻将吃牌
+    MahjongChiPengGang mahjongChi = 2;
+}
+
+//
+// 碰
+///////////////////////////////////////////////////////////////////////
+// 指令
+message MahjongPengCmd {
+}
+
+// 结果
+message MahjongPengResult {
+    // 麻将碰牌
+    MahjongChiPengGang mahjongPeng = 1;
+}
+
+// 广播
+message MahjongPengBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 麻将碰牌
+    MahjongChiPengGang mahjongPeng = 2;
+}
+
+//
+// 杠
+///////////////////////////////////////////////////////////////////////
+// 指令
+message MahjongGangCmd {
+}
+
+// 结果 - 明杠
+message MahjongMingGangResult {
+    // 麻将明杠
+    MahjongChiPengGang mahjongMingGang = 1;
+}
+
+// 结果 - 暗杠
+message MahjongAnGangResult {
+    // 麻将暗杠
+    MahjongChiPengGang mahjongAnGang = 1;
+}
+
+// 结果 - 补杠
+message MahjongBuGangResult {
+    // 麻将暗杠
+    MahjongChiPengGang mahjongBuGang = 1;
+}
+
+// 广播 - 明杠
+message MahjongMingGangBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 麻将明杠
+    MahjongChiPengGang mahjongMingGang = 2;
+}
+
+// 广播 - 暗杠
+message MahjongAnGangBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 麻将暗杠
+    MahjongChiPengGang mahjongAnGang = 2;
+}
+
+// 广播 - 补杠
+message MahjongBuGangBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 麻将暗杠
+    MahjongChiPengGang mahjongBuGang = 2;
+}
+
+//
+// 亮倒
+///////////////////////////////////////////////////////////////////////
+// 指令
+message MahjongLiangDaoCmd {
+}
+
+// 结果
+message MahjongLiangDaoResult {
+    // 麻将牌数值列表
+    repeated sint32 mahjongInHand = 1;
+    // 麻将摸牌
+    sint32 moPai = 2;
+}
+
+// 广播
+message MahjongLiangDaoBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 麻将牌数值列表
+    repeated sint32 mahjongInHand = 2;
+    // 麻将摸牌
+    sint32 moPai = 3;
+}
+
+//
+// "胡" 或者 "自摸"
+///////////////////////////////////////////////////////////////////////
+// 指令
+message MahjongHuCmd {
+}
+
+// 结果
+message MahjongHuOrZiMoResult {
+    // 胡或者自摸的是哪一张牌
+    sint32 t = 1;
+    // 胡
+    bool hu = 2;
+    // 自摸
+    bool ziMo = 3;
+    // 点炮用户 Id, 当 hu = true 时该字段有效
+    sint32 dianPaoUserId = 4;
+    // 胡牌模式列表
+    repeated KeyAndVal huPattern = 5;
+}
+
+// 广播
+message MahjongHuOrZiMoBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 胡的是哪一张牌
+    sint32 t = 2;
+    // 胡或者自摸的是哪一张牌
+    bool hu = 3;
+    // 自摸
+    bool ziMo = 4;
+    // 点炮用户 Id, 当 hu = true 时该字段有效
+    sint32 dianPaoUserId = 5;
+    // 胡牌模式列表
+    repeated KeyAndVal huPattern = 6;
+}
+
+// 
+// 过
+///////////////////////////////////////////////////////////////////////
+// 指令
+message MahjongGuoCmd {
+}
+
+// 结果
+message MahjongGuoResult {
+    // 是否成功, 有些地方玩法是不能过的
+    bool ok = 1;
+}
+
+// 
+// 麻将荒庄
+///////////////////////////////////////////////////////////////////////
+// 广播
+message MahjongHuangZhuangBroadcast {
+}
+
+//
+// 单局结算
+///////////////////////////////////////////////////////////////////////
+// 广播
+message RoundSettlementBroadcast {
+    // 结算项目
+    message SettlementItem {
+        // 用户 Id
+        sint32 userId = 1;
+        // 当前分数
+        sint32 currScore = 2;
+        // 总分数
+        sint32 totalScore = 3;
+        // 座位索引
+        sint32 seatIndex = 4;
+        // 飘几, -1 = 未知, 0 = 不飘, 1 = 飘_1, 2 = 飘_2, 3 = 飘_3, 4 = 飘_4
+        sint32 piaoX = 5;
+        // 房主标志
+        bool roomOwnerFlag = 6;
+        // 庄家标志
+        bool zhuangJiaFlag = 7;
+        // 胡牌
+        bool hu = 8;
+        // 点炮
+        bool dianPao = 9;
+        // 自摸
+        bool ziMo = 10;
+        // 胡牌模式列表
+        repeated KeyAndVal huPattern = 11;
+        // 杠牌模式列表
+        repeated KeyAndVal gangPattern = 12;
+        // 手中的牌
+        repeated sint32 mahjongInHand = 13;
+        // 胡或者自摸的牌
+        sint32 mahjongHuOrZiMo = 14;
+        // 麻将吃碰杠 ( 包括明杠、暗杠、补杠 )
+        repeated MahjongChiPengGang mahjongChiPengGang = 15;
+        // 麻将亮风
+        // XXX 注意: 这是威海麻将特色玩法
+        MahjongLiangFeng mahjongLiangFeng = 16;
+    }
+
+    // 结算项目数组
+    repeated SettlementItem settlementItem = 1;
+}
+
+//
+// 房间结算
+///////////////////////////////////////////////////////////////////////
+// 广播
+message RoomSettlementBroadcast {
+    // 结算项目
+    message SettlementItem {
+        // 用户 Id
+        sint32 userId = 1;
+        // 座位索引
+        sint32 seatIndex = 2;
+        // 房主标志
+        bool roomOwnerFlag = 3;
+        // 坐庄次数
+        sint32 zuoZhuangTimez = 4;
+        // 自摸次数
+        sint32 ziMoTimez = 5;
+        // 点炮次数
+        sint32 dianPaoTimez = 6;
+        // 胡牌次数
+        sint32 huPaiTimez = 7;
+        // 总分数
+        sint32 totalScore = 8;
+        // 大赢家标志
+        bool bigWinner = 9;
+    }
+
+    // 结算项目数组
+    repeated SettlementItem settlementItem = 1;
+}
+
+//
+// 亮风
+///////////////////////////////////////////////////////////////////////
+// 指令
+message MahjongLiangFengCmd {
+    // 第一张牌
+    sint32 t0 = 1;
+    // 第二张牌
+    sint32 t1 = 2;
+    // 第三张牌
+    sint32 t2 = 3;
+}
+
+// 结果
+message MahjongLiangFengResult {
+    // 麻将亮风
+    MahjongLiangFeng mahjongLiangFeng = 1;
+}
+
+// 广播
+message MahjongLiangFengBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 麻将亮风
+    MahjongLiangFeng mahjongLiangFeng = 2;
+}
+
+//
+// 补风
+///////////////////////////////////////////////////////////////////////
+// 指令
+message MahjongBuFengCmd {
+}
+
+// 结果
+message MahjongBuFengResult {
+    // 麻将亮风, 
+    // XXX 注意: 补风之后会导致亮风变化
+    MahjongLiangFeng mahjongLiangFeng = 1;
+}
+
+// 广播
+message MahjongBuFengBroadcast {
+    // 用户 Id
+    sint32 userId = 1;
+    // 麻将亮风,
+    // XXX 注意: 补风之后会导致亮风变化
+    MahjongLiangFeng mahjongLiangFeng = 2;
+}
+
+//
+// 亮杠腚
+///////////////////////////////////////////////////////////////////////
+// 广播
+message MahjongLiangGangDingBroadcast {
+    // 第一张牌
+    sint32 t0 = 1;
+    // 第二张牌
+    sint32 t1 = 2;
+}

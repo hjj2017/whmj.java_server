@@ -1,0 +1,152 @@
+syntax = "proto3";
+
+package msg;
+option java_package = "org.mj.bizserver.allmsg";
+
+// 
+// 战绩服务器消息编号
+enum RecordServerMsgCodeDef {
+    _Dummy = 0;
+    _GetRecordListCmd = 501;
+    _GetRecordListResult = 502;
+    _GetRecordDetailzCmd = 503;
+    _GetRecordDetailzResult = 504;
+};
+
+// 键值定义
+message KeyAndVal {
+    // 关键字
+    sint32 key = 1;
+    // 数值
+    sint32 val = 2;
+}
+
+// 玩家
+message Player {
+    // 用户 Id
+    sint32 userId = 1;
+    // 用户名称
+    string userName = 2;
+    // 用户头像
+    string headImg = 3;
+    // 性别, -1 = 未知, 0 = 女, 1 = 男, 2 = 双性
+    sint32 sex = 4;
+    // 当前分数
+    sint32 currScore = 5;
+    // 总分数
+    sint32 totalScore = 6;
+    // 座位索引
+    sint32 seatIndex = 7;
+    // ( 麻将 ) 庄家标志
+    bool zhuangFlag = 8;
+    // ( 麻将 ) 自摸
+    bool ziMo = 9;
+    // ( 麻将 ) 胡
+    bool hu = 10;
+    // ( 麻将 ) 点炮
+    bool dianPao = 11;
+    // ( 斗地主 ) 地主
+    bool diZhu = 12;
+    // ( 斗地主 ) 农民
+    bool nongMin = 13;
+    // ( 斗地主 ) 赢家
+    bool winner = 14;
+}
+
+//
+// 获取战绩列表
+///////////////////////////////////////////////////////////////////////
+// 指令
+message GetRecordListCmd {
+    // 用户 Id
+    sint32 userId = 1;
+    // 亲友圈 Id
+    sint32 clubId = 2;
+    // 游戏类型 0
+    sint32 gameType0 = 3;
+    // 游戏类型 1
+    sint32 gameType1 = 4;
+    // 页面索引
+    sint32 pageIndex = 5;
+    // 页面大小 ( 记录个数 )
+    sint32 pageSize = 6;
+}
+
+// 结果
+message GetRecordListResult {
+    // 单条战绩
+    message ARecord {
+        // 游戏类型 1
+        sint32 gameType1 = 1;
+        // 房间 Id
+        sint32 roomId = 2;
+        // 房间 UUId
+        string roomUUId = 3;
+        // 花费房卡数量
+        sint32 costRoomCard = 4;
+        // 实际局数
+        sint32 actualRoundCount = 5;
+        // 创建时间
+        sint64 createTime = 6;
+        // 结束时间
+        sint64 overTime = 7;
+        // 玩家数组
+        repeated Player player = 8;
+    }
+
+    // 用户 Id
+    sint32 userId = 1;
+    // 亲友圈 Id
+    sint32 clubId = 2;
+    // 游戏类型 0, 1 = 麻将, 2 = 扑克
+    sint32 gameType0 = 3;
+    // 游戏类型 1
+    sint32 gameType1 = 4;
+    // 页面索引
+    sint32 pageIndex = 5;
+    // 总记录数量
+    sint32 totalCount = 6;
+    // 单条记录数组
+    repeated ARecord recordz = 7;
+}
+
+//
+// 获取战绩详情
+///////////////////////////////////////////////////////////////////////
+// 指令
+message GetRecordDetailzCmd {
+    /** 房间 UUId */
+    string roomUUId = 1;
+}
+
+// 结果
+message GetRecordDetailzResult {
+    // 单局
+    message ARound {
+        // 牌局索引, 从 0 开始
+        sint32 roundIndex = 1;
+        // 创建时间
+        sint64 createTime = 2;
+        // 玩家数组
+        repeated Player player = 3;
+        // 回放存根
+        string playbackStub = 4;
+    }
+
+    // 游戏类型 0
+    sint32 gameType0 = 1;
+    // 游戏类型 1
+    sint32 gameType1 = 2;
+    // 房间 Id
+    sint32 roomId = 3;
+    // 房间 UUId
+    string roomUUId = 4;
+    // 花费房卡数量
+    sint32 costRoomCard = 5;
+    // 实际局数
+    sint32 actualRoundCount = 6;
+    // 创建时间
+    sint64 createTime = 7;
+    // 牌局列表
+    repeated ARound round = 8;
+}
