@@ -42,6 +42,20 @@ python3 etc/tool/gen_club_id.py
 
 **注意，在运行前需要确保 .py 文件中配置的数据库地址、用户名和密码是否正确。**
 
+执行无误的话，会输出如下内容：
+
+```
+>>> 从 MySQL 中读取用户 Id 列表 <<<
+共加载 0 条用户 Id
+>>> 写入用户 Id 到 Redis <<<
++++ 全部完成 +++
+
+>>> 从 MySQL 中读取亲友圈 Id 列表 <<<
+共加载 0 条亲友圈 Id
+>>> 写入亲友圈 Id 到 Redis <<<
++++ 全部完成 +++
+```
+
 ## 启动 proxyserver
 启动 proxyserver 时，需要在 IDEA 中添加以下参数：
 
@@ -52,6 +66,8 @@ python3 etc/tool/gen_club_id.py
 -p 20480
 -c ../etc/proxyserver_all.conf.json
 ```
+
+**注意：还需要修改工作目录为 whmj.java_server\proxyserver**
 
 ## 启动 bizserver
 启动 proxyserver 时，需要在 IDEA 中添加以下参数：
@@ -64,3 +80,12 @@ python3 etc/tool/gen_club_id.py
 -p 40960
 -c ../etc/bizserver_all.conf.json
 ```
+
+**注意：还需要修改工作目录为 whmj.java_server\bizserver**
+
+## 怎样测试服务器
+可以打开本机浏览器，然后输入以下地址：
+
+http://cdn0001.afrxvk.cn/whmj/go.html?serverAddr=127.0.0.1:20480
+
+这样，麻将客户端就会尝试连接本地服务器
