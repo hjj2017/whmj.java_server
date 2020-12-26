@@ -11,7 +11,7 @@
 ## 初始化 MySQL 数据库
 需要建立 mj_game、mj_log、mj_log_template 这三个数据库。
 
-```sql
+```
 create database mj_game         default character set utf8mb4;
 create database mj_log          default character set utf8mb4;
 create database mj_log_template default character set utf8mb4;
@@ -19,7 +19,7 @@ create database mj_log_template default character set utf8mb4;
 
 建立数据库完成之后，需要导入相应的数据库文件：
 
-```sql
+```
 use mj_game
 source etc/sql/mj_game.sql;                -- 创建 t_user、t_club、t_club_member 等数据表
 source etc/sql/mj_cost_room_card_conf.sql; -- 导入房卡消耗数量配置
@@ -35,7 +35,7 @@ MySQL 数据库初始化完成之后，还需要初始化 Redis，主要是建�
 
 如果你已经安装好 Python3 及其扩展，那么运行以下命令即可：
 
-```shell
+```
 python3 etc/tool/gen_user_id.py
 python3 etc/tool/gen_club_id.py
 ```
