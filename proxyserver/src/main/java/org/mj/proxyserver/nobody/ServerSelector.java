@@ -88,7 +88,7 @@ final class ServerSelector {
             return null;
         }
 
-        // 选择一个服务器门户
+        // 选择一个服务器资料
         int selectedIndex = RAND.nextInt(tempList.size());
         NewServerFinder.ServerProfile selectedSp = tempList.get(selectedIndex);
 
@@ -126,7 +126,7 @@ final class ServerSelector {
             return null;
         }
 
-        // 选择一个服务器门户
+        // 选择一个服务器资料
         NewServerFinder.ServerProfile selectedSp = null;
         int minLoadCount = Integer.MAX_VALUE;
 
@@ -149,7 +149,7 @@ final class ServerSelector {
 
         if (null == selectedSp) {
             LOGGER.error(
-                "未找到合适的服务器门户, expectJobType = {}",
+                "未找到合适的服务器资料, expectJobType = {}",
                 expectJobType
             );
             return null;
@@ -184,7 +184,7 @@ final class ServerSelector {
     static public NettyClient getServerConnByServerId(
         final NewServerFinder newServerFinder, final int serverId,
         OutParam<Long> out_rev) {
-        // 获取服务器门户
+        // 获取服务器资料
         NewServerFinder.ServerProfile sp = newServerFinder.getServerById(serverId);
 
         if (null == sp ||
