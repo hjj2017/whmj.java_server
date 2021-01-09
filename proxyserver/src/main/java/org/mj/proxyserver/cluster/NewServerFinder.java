@@ -36,9 +36,9 @@ public class NewServerFinder implements MySubscriber.IMsgHandler {
     static private final NewServerFinder _instance = new NewServerFinder();
 
     /**
-     * 服务器门户字典, key = serverId
+     * 服务器资料字典, key = serverId
      */
-    private final Map<Integer, ServerPortal> _spMap = new ConcurrentHashMap<>();
+    private final Map<Integer, ServerProfile> _spMap = new ConcurrentHashMap<>();
 
     /**
      * 版本号
@@ -46,9 +46,9 @@ public class NewServerFinder implements MySubscriber.IMsgHandler {
     private final AtomicLong _rev = new AtomicLong(0L);
 
     /**
-     * 排序的服务器门户列表
+     * 排序的服务器资料列表
      */
-    private List<ServerPortal> _sortedSpList = null;
+    private List<ServerProfile> _sortedSpList = null;
 
     /**
      * 私有化类默认构造器
@@ -91,8 +91,8 @@ public class NewServerFinder implements MySubscriber.IMsgHandler {
             // 解析 JSON 对象
             JSONObject joServerInfo = JSONObject.parseObject(strServerInfo);
 
-            // 获取服务器门户
-            ServerPortal sp = _spMap.get(newServerId);
+            // 获取服务器资料
+            ServerProfile sp = _spMap.get(newServerId);
 
             if (null == sp) {
                 // 记录日志
@@ -101,7 +101,7 @@ public class NewServerFinder implements MySubscriber.IMsgHandler {
                     newServerId
                 );
 
-                _spMap.putIfAbsent(newServerId, new ServerPortal());
+                _spMap.putIfAbsent(newServerId, new ServerProfile());
                 _sortedSpList = null;
                 sp = _spMap.get(newServerId);
             }
@@ -148,7 +148,7 @@ public class NewServerFinder implements MySubscriber.IMsgHandler {
             // 获取服务器 Id
             final int serverId = closeClient.getServerId();
             // 如果断线就删除
-            ServerPortal sp = _spMap.remove(serverId);
+            ServerProfile sp = _spMap.remove(serverId);
             _sortedSpList = null;
 
             if (null != sp) {
@@ -186,12 +186,12 @@ public class NewServerFinder implements MySubscriber.IMsgHandler {
     /**
      * 获取所有服务器
      *
-     * @return 服务器门户列表
+     * @return 服务器资料列表
      */
-    public List<ServerPortal> getAllServer() {
+    public List<ServerProfile> getServerALL() {
         if (null == _sortedSpList) {
             _sortedSpList = new ArrayList<>(_spMap.values());
-            _sortedSpList.sort(Comparator.comparingInt(NewServerFinder.ServerPortal::getServerId));
+            _sortedSpList.sort(Comparator.comparingInt(ServerProfile::getServerId));
         }
 
         return _sortedSpList;
@@ -203,15 +203,15 @@ public class NewServerFinder implements MySubscriber.IMsgHandler {
      * @param serverId 服务器 Id
      * @return 服务器门面
      */
-    public ServerPortal getServerById(int serverId) {
+    public ServerProfile getServerById(int serverId) {
         return _spMap.get(serverId);
     }
 
     /**
-     * 服务器门户,
+     * 服务器资料,
      * 包括客户端连接和负载数量
      */
-    public static class ServerPortal {
+    public static class ServerProfile {
         /**
          * 客户端连接
          */

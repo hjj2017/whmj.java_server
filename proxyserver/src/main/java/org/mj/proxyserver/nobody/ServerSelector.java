@@ -61,9 +61,9 @@ final class ServerSelector {
         }
 
         // 创建一个临时列表
-        List<NewServerFinder.ServerPortal> tempList = null;
+        List<NewServerFinder.ServerProfile> tempList = null;
 
-        for (NewServerFinder.ServerPortal sp : newServerFinder.getAllServer()) {
+        for (NewServerFinder.ServerProfile sp : newServerFinder.getServerALL()) {
             if (null == sp ||
                 null == sp.getClientConn() ||
                 !sp.getClientConn().isReady()) {
@@ -90,7 +90,7 @@ final class ServerSelector {
 
         // 选择一个服务器门户
         int selectedIndex = RAND.nextInt(tempList.size());
-        NewServerFinder.ServerPortal selectedSp = tempList.get(selectedIndex);
+        NewServerFinder.ServerProfile selectedSp = tempList.get(selectedIndex);
 
         // 设置版本号
         OutParam.putVal(out_rev, newServerFinder.getRev());
@@ -127,10 +127,10 @@ final class ServerSelector {
         }
 
         // 选择一个服务器门户
-        NewServerFinder.ServerPortal selectedSp = null;
+        NewServerFinder.ServerProfile selectedSp = null;
         int minLoadCount = Integer.MAX_VALUE;
 
-        for (NewServerFinder.ServerPortal sp : newServerFinder.getAllServer()) {
+        for (NewServerFinder.ServerProfile sp : newServerFinder.getServerALL()) {
             if (null == sp ||
                 null == sp.getClientConn() ||
                 !sp.getClientConn().isReady()) {
@@ -185,7 +185,7 @@ final class ServerSelector {
         final NewServerFinder newServerFinder, final int serverId,
         OutParam<Long> out_rev) {
         // 获取服务器门户
-        NewServerFinder.ServerPortal sp = newServerFinder.getServerById(serverId);
+        NewServerFinder.ServerProfile sp = newServerFinder.getServerById(serverId);
 
         if (null == sp ||
             null == sp.getClientConn() ||
