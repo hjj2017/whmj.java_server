@@ -74,7 +74,19 @@ public class GameXCmdHandler extends ChannelInboundHandlerAdapter {
         }
 
         // 服务器连接
-        NettyClient serverConn = getGameServerConnByUserId(userId);
+        NettyClient serverConn;
+
+        if (HallServerProtocol.HallServerMsgCodeDef._JoinRoomCmd_VALUE == msgCode ||
+            ClubServerProtocol.ClubServerMsgCodeDef._JoinTableCmd_VALUE == msgCode) {
+            // 如果是加入房间或 ( 亲友圈 ) 牌桌,
+            // 那么根据房间 Id 获取服务器连接
+            int roomId = getRoomId(clientMsg);
+            serverConn = getGameServerConnByRoomId(roomId);
+        } else {
+            // 如果是其他游戏相关消息,
+            // 则通过用户 Id 获取服务器连接
+            serverConn = getGameServerConnByUserId(userId);
+        }
 
         if (null == serverConn ||
             !serverConn.isReady()) {
@@ -138,6 +150,84 @@ public class GameXCmdHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    /**
+     * 获取房间 Id
+     *
+     * @param clientMsg 客户端消息半成品
+     * @return 房间 Id
+     */
+    private int getRoomId(ClientMsgSemiFinished clientMsg) {
+        if (null == clientMsg) {
+            return -1;
+        }
+
+        try {
+            if (HallServerProtocol.HallServerMsgCodeDef._JoinRoomCmd_VALUE == clientMsg.getMsgCode()) {
+                HallServerProtocol.JoinRoomCmd
+                    cmdObj = HallServerProtocol.JoinRoomCmd.parseFrom(clientMsg.getMsgBody());
+                return cmdObj.getRoomId();
+            } else if (ClubServerProtocol.ClubServerMsgCodeDef._JoinTableCmd_VALUE == clientMsg.getMsgCode()) {
+                ClubServerProtocol.JoinTableCmd
+                    cmdObj = ClubServerProtocol.JoinTableCmd.parseFrom(clientMsg.getMsgBody());
+                return cmdObj.getRoomId();
+            }
+        } catch (Exception ex) {
+            // 记录错误日志
+            LOGGER.error(ex.getMessage(), ex);
+        }
+
+        return -1;
+    }
+
+    /**
+     * 获取游戏服务器连接
+     *
+     * @param roomId 房间 Id
+     * @return Netty 客户端
+     */
+    private NettyClient getGameServerConnByRoomId(int roomId) {
+        if (roomId <= 0) {
+            return null;
+        }
+
+        try (Jedis redisCache = RedisXuite.getRedisCache()) {
+            String strRoomAtServerId = redisCache.hget(
+                RedisKeyDef.ROOM_X_PREFIX + roomId,
+                RedisKeyDef.ROOM_AT_SERVER_ID
+            );
+
+            if (null == strRoomAtServerId ||
+                strRoomAtServerId.isEmpty()) {
+                return null;
+            }
+
+            // 获取服务器连接
+            NettyClient serverConn = ServerSelector.getServerConnByServerId(
+                NewServerFinder.getInstance(),
+                Integer.parseInt(strRoomAtServerId)
+            );
+
+            if (null != serverConn &&
+                serverConn.isReady()) {
+                // 如果服务器连接是正常的,
+                return serverConn;
+            } else {
+                // 如果服务器连接不正常,
+                // 从 Redis 中删除房间所在服务器 Id,
+                // 并且删除用户所在房间 Id
+                redisCache.hdel(
+                    RedisKeyDef.ROOM_X_PREFIX + strRoomAtServerId,
+                    RedisKeyDef.ROOM_AT_SERVER_ID
+                );
+            }
+        } catch (Exception ex) {
+            // 记录错误日志
+            LOGGER.error(ex.getMessage(), ex);
+        }
+
+        return null;
+    }
+    
     /**
      * 获取游戏服务器连接
      *
