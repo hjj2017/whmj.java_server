@@ -3,6 +3,7 @@ package org.mj.comm.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.params.SetParams;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -91,10 +92,13 @@ public final class DLock implements AutoCloseable {
             }
 
             // 通过 Redis 加锁
-            Long succezz = redisCache.setnx(getRedisKey(), "yes");
+            String ok = redisCache.set(
+                getRedisKey(),
+                "yes",
+                new SetParams().nx().px(duration)
+            );
 
-            if (succezz > 0) {
-                redisCache.pexpire(getRedisKey(), duration);
+            if ("ok".equalsIgnoreCase(ok)) {
                 _duration = duration;
                 return true;
             }
