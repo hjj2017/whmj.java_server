@@ -94,7 +94,9 @@ public class GetJoinedRoomIdCmdHandler implements ICmdHandler<HallServerProtocol
                 atRoomId = Integer.parseInt(userAtRoomId);
             }
 
-            if (redisCache.exists(RedisKeyDef.ROOM_X_PREFIX + atRoomId)) {
+            if (redisCache.hexists(
+                RedisKeyDef.ROOM_X_PREFIX + atRoomId,
+                RedisKeyDef.ROOM_AT_SERVER_ID)) {
                 return atRoomId;
             }
 

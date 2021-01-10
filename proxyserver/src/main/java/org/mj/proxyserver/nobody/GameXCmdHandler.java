@@ -198,6 +198,11 @@ public class GameXCmdHandler extends ChannelInboundHandlerAdapter {
 
             if (null == strRoomAtServerId ||
                 strRoomAtServerId.isEmpty()) {
+                // 如果没有找到房间所在服务器 Id,
+                // 从 Redis 中删除房间
+                redisCache.del(
+                    RedisKeyDef.ROOM_X_PREFIX + strRoomAtServerId
+                );
                 return null;
             }
 
@@ -213,11 +218,9 @@ public class GameXCmdHandler extends ChannelInboundHandlerAdapter {
                 return serverConn;
             } else {
                 // 如果服务器连接不正常,
-                // 从 Redis 中删除房间所在服务器 Id,
-                // 并且删除用户所在房间 Id
-                redisCache.hdel(
-                    RedisKeyDef.ROOM_X_PREFIX + strRoomAtServerId,
-                    RedisKeyDef.ROOM_AT_SERVER_ID
+                // 从 Redis 中删除房间
+                redisCache.del(
+                    RedisKeyDef.ROOM_X_PREFIX + strRoomAtServerId
                 );
             }
         } catch (Exception ex) {
@@ -227,7 +230,7 @@ public class GameXCmdHandler extends ChannelInboundHandlerAdapter {
 
         return null;
     }
-    
+
     /**
      * 获取游戏服务器连接
      *
@@ -274,11 +277,9 @@ public class GameXCmdHandler extends ChannelInboundHandlerAdapter {
                     return serverConn;
                 } else {
                     // 如果服务器连接不正常,
-                    // 从 Redis 中删除房间所在服务器 Id,
-                    // 并且删除用户所在房间 Id
-                    redisCache.hdel(
-                        RedisKeyDef.ROOM_X_PREFIX + strUserAtRoomId,
-                        RedisKeyDef.ROOM_AT_SERVER_ID
+                    // 从 Redis 中删除房间并且删除用户所在房间 Id
+                    redisCache.del(
+                        RedisKeyDef.ROOM_X_PREFIX + strUserAtRoomId
                     );
                     redisCache.hdel(
                         RedisKeyDef.USER_X_PREFIX + userId,
