@@ -5,7 +5,7 @@ import org.mj.bizserver.allmsg.ClubServerProtocol;
 import org.mj.bizserver.def.PubSubChannelDef;
 import org.mj.comm.pubsub.MySubscriber;
 import org.mj.proxyserver.foundation.ClientChannelGroup;
-import org.mj.proxyserver.nobody.RouteTable;
+import org.mj.proxyserver.nobody.router.RouteTable;
 
 /**
  * 亲友圈牌桌变化监听者

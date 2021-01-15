@@ -1,4 +1,4 @@
-package org.mj.proxyserver.nobody;
+package org.mj.proxyserver.nobody.router;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -12,17 +12,18 @@ import org.mj.proxyserver.ProxyServer;
 import org.mj.proxyserver.cluster.NewServerFinder;
 import org.mj.proxyserver.foundation.ClientMsgSemiFinished;
 import org.mj.proxyserver.foundation.IdSetterGetter;
+import org.mj.proxyserver.nobody.ClientMsgRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * 公会命令相关处理器
  */
-public class ClubXCmdHandler extends ChannelInboundHandlerAdapter {
+public class ClubXCmdRouter extends ChannelInboundHandlerAdapter {
     /**
      * 日志对象
      */
-    static private final Logger LOGGER = LoggerFactory.getLogger(ClubXCmdHandler.class);
+    static private final Logger LOGGER = LoggerFactory.getLogger(ClubXCmdRouter.class);
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msgObj) {
@@ -149,7 +150,7 @@ public class ClubXCmdHandler extends ChannelInboundHandlerAdapter {
             // 如果是创建和加入房间消息,
             // 则转发到游戏服务器执行...
             ctx.pipeline().get(ClientMsgRouter.class)
-                .getGameXCmdHandler()
+                .getGameXCmdRouter()
                 .channelRead(ctx, clientMsg);
         } catch (Exception ex) {
             // 记录错误日志

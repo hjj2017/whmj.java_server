@@ -1,4 +1,4 @@
-package org.mj.proxyserver.nobody;
+package org.mj.proxyserver.nobody.router;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -14,13 +14,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 战绩相关命令处理器
+ * 聊天相关命令处理器
  */
-public class RecordXCmdHandler extends ChannelInboundHandlerAdapter {
+public class ChatXCmdRouter extends ChannelInboundHandlerAdapter {
     /**
      * 日志对象
      */
-    static private final Logger LOGGER = LoggerFactory.getLogger(RecordXCmdHandler.class);
+    static private final Logger LOGGER = LoggerFactory.getLogger(ChatXCmdRouter.class);
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msgObj) {
@@ -38,9 +38,9 @@ public class RecordXCmdHandler extends ChannelInboundHandlerAdapter {
         // 获取当前服务器工作类型
         ServerJobTypeEnum currJobType = MsgRecognizer.getServerJobTypeByMsgCode(msgCode);
 
-        if (ServerJobTypeEnum.RECORD != currJobType) {
+        if (ServerJobTypeEnum.CHAT != currJobType) {
             LOGGER.error(
-                "当前命令不属于战绩模块, msgCode = {}",
+                "当前命令不属于聊天模块, msgCode = {}",
                 msgCode
             );
             return;
@@ -49,7 +49,7 @@ public class RecordXCmdHandler extends ChannelInboundHandlerAdapter {
         // 获取路由表
         RouteTable rt = RouteTable.getOrCreate(ctx);
         // 获取已经选择的服务器 Id
-        int selectServerId = rt.getServerId(ServerJobTypeEnum.RECORD);
+        int selectServerId = rt.getServerId(ServerJobTypeEnum.CHAT);
 
         // 获取服务器连接
         NettyClient serverConn = ServerSelector.getServerConnByServerId(
@@ -62,7 +62,7 @@ public class RecordXCmdHandler extends ChannelInboundHandlerAdapter {
             // 重新选择服务器
             serverConn = ServerSelector.randomAServerConnByServerJobType(
                 NewServerFinder.getInstance(),
-                ServerJobTypeEnum.RECORD
+                ServerJobTypeEnum.CHAT
             );
         }
 
@@ -75,7 +75,7 @@ public class RecordXCmdHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        rt.putServerId(ServerJobTypeEnum.RECORD, serverConn.getServerId());
+        rt.putServerId(ServerJobTypeEnum.CHAT, serverConn.getServerId());
 
         final InternalServerMsg innerMsg = new InternalServerMsg();
         innerMsg.setProxyServerId(ProxyServer.getId());

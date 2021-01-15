@@ -6,6 +6,12 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.mj.bizserver.def.ServerJobTypeEnum;
 import org.mj.bizserver.foundation.MsgRecognizer;
 import org.mj.proxyserver.foundation.ClientMsgSemiFinished;
+import org.mj.proxyserver.nobody.router.ChatXCmdRouter;
+import org.mj.proxyserver.nobody.router.ClubXCmdRouter;
+import org.mj.proxyserver.nobody.router.GameXCmdRouter;
+import org.mj.proxyserver.nobody.router.HallXCmdRouter;
+import org.mj.proxyserver.nobody.router.PassportXCmdRouter;
+import org.mj.proxyserver.nobody.router.RecordXCmdRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,12 +36,12 @@ public class ClientMsgRouter extends ChannelInboundHandlerAdapter {
      * 类默认构造器
      */
     public ClientMsgRouter() {
-        _hMap.putIfAbsent(ServerJobTypeEnum.PASSPORT, new PassportXCmdHandler());
-        _hMap.putIfAbsent(ServerJobTypeEnum.HALL, new HallXCmdHandler());
-        _hMap.putIfAbsent(ServerJobTypeEnum.GAME, new GameXCmdHandler());
-        _hMap.putIfAbsent(ServerJobTypeEnum.CLUB, new ClubXCmdHandler());
-        _hMap.putIfAbsent(ServerJobTypeEnum.CHAT, new ChatXCmdHandler());
-        _hMap.putIfAbsent(ServerJobTypeEnum.RECORD, new RecordXCmdHandler());
+        _hMap.putIfAbsent(ServerJobTypeEnum.PASSPORT, new PassportXCmdRouter());
+        _hMap.putIfAbsent(ServerJobTypeEnum.HALL, new HallXCmdRouter());
+        _hMap.putIfAbsent(ServerJobTypeEnum.GAME, new GameXCmdRouter());
+        _hMap.putIfAbsent(ServerJobTypeEnum.CLUB, new ClubXCmdRouter());
+        _hMap.putIfAbsent(ServerJobTypeEnum.CHAT, new ChatXCmdRouter());
+        _hMap.putIfAbsent(ServerJobTypeEnum.RECORD, new RecordXCmdRouter());
         // 在此添加新的服务器工作类型和处理器
     }
 
@@ -44,7 +50,7 @@ public class ClientMsgRouter extends ChannelInboundHandlerAdapter {
      *
      * @return 游戏指令处理器
      */
-    ChannelInboundHandler getGameXCmdHandler() {
+    public ChannelInboundHandler getGameXCmdRouter() {
         return _hMap.getOrDefault(ServerJobTypeEnum.GAME, null);
     }
 

@@ -1,4 +1,4 @@
-package org.mj.proxyserver.nobody;
+package org.mj.proxyserver.nobody.router;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -24,11 +24,11 @@ import java.net.InetSocketAddress;
 /**
  * 游戏相关命令处理器
  */
-public class GameXCmdHandler extends ChannelInboundHandlerAdapter {
+public class GameXCmdRouter extends ChannelInboundHandlerAdapter {
     /**
      * 日志对象
      */
-    static private final Logger LOGGER = LoggerFactory.getLogger(GameXCmdHandler.class);
+    static private final Logger LOGGER = LoggerFactory.getLogger(GameXCmdRouter.class);
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msgObj) {

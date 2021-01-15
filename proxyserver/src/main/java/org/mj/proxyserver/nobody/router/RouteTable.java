@@ -1,4 +1,4 @@
-package org.mj.proxyserver.nobody;
+package org.mj.proxyserver.nobody.router;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;

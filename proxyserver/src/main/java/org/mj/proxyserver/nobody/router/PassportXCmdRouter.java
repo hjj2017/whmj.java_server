@@ -1,4 +1,4 @@
-package org.mj.proxyserver.nobody;
+package org.mj.proxyserver.nobody.router;
 
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.ChannelHandlerContext;
@@ -21,11 +21,11 @@ import java.net.InetSocketAddress;
 /**
  * 账户相关命令处理器
  */
-public class PassportXCmdHandler extends ChannelInboundHandlerAdapter {
+public class PassportXCmdRouter extends ChannelInboundHandlerAdapter {
     /**
      * 日志对象
      */
-    static private final Logger LOGGER = LoggerFactory.getLogger(PassportXCmdHandler.class);
+    static private final Logger LOGGER = LoggerFactory.getLogger(PassportXCmdRouter.class);
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msgObj) {
