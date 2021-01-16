@@ -15,6 +15,7 @@ import org.mj.comm.util.RedisXuite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.params.SetParams;
 
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
@@ -38,9 +39,9 @@ public final class AliSMSAuthZervice {
     static private final AliSMSAuthZervice _instance = new AliSMSAuthZervice();
 
     /**
-     * 验证码过期时间, 单位 = 秒
+     * 验证码过期时间, 单位 = 毫秒
      */
-    static private final int AUTH_CODE_EXPIRE_TIME = 300;
+    static private final int AUTH_CODE_EXPIRE_TIME = 300000;
 
     /**
      * 是否已经初始化
@@ -225,17 +226,19 @@ public final class AliSMSAuthZervice {
 
             // 生成验证码并设置到 Redis
             final String authCode = genAuthCode();
-            Long succezz = redisCache.setnx(redisKey, authCode);
+            String ok = redisCache.set(
+                redisKey,
+                authCode,
+                new SetParams().nx().px(AUTH_CODE_EXPIRE_TIME)
+            );
 
-            if (!(succezz > 0)) {
+            if (!"ok".equalsIgnoreCase(ok)) {
                 LOGGER.error(
                     "设置验证码失败, phoneNumber = {}",
                     phoneNumber
                 );
                 return;
             }
-
-            redisCache.expire(redisKey, AUTH_CODE_EXPIRE_TIME);
 
             LOGGER.info(
                 "已暂存验证码, phoneNumber = {}, authCode = {}",
@@ -294,7 +297,7 @@ public final class AliSMSAuthZervice {
         IAcsClient acsClient = null;
 
         try {
-            // 获取 OSS 客户端
+            // 获取 ACS 客户端
             acsClient = _workerQueue.poll(_timeoutMS, TimeUnit.MILLISECONDS);
 
             if (null == acsClient) {
