@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
@@ -327,7 +326,7 @@ public final class Player {
      */
     public List<MahjongChiPengGang> getMahjongChiPengGangListCopy() {
         if (null == _mahjongChiPengGangListCopy) {
-            _mahjongChiPengGangListCopy = Collections.unmodifiableList(List.copyOf(_mahjongChiPengGangList));
+            _mahjongChiPengGangListCopy = List.copyOf(_mahjongChiPengGangList);
         }
 
         return _mahjongChiPengGangListCopy;
@@ -470,7 +469,7 @@ public final class Player {
      */
     public List<MahjongTileDef> getMahjongInHandCopy() {
         if (null == _mahjongInHandCopy) {
-            _mahjongInHandCopy = Collections.unmodifiableList(List.copyOf(_mahjongInHand));
+            _mahjongInHandCopy = List.copyOf(_mahjongInHand);
         }
 
         return _mahjongInHandCopy;
