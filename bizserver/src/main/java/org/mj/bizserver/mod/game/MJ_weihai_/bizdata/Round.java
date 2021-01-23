@@ -4,7 +4,6 @@ import org.mj.bizserver.mod.game.MJ_weihai_.report.IWordz;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 
@@ -219,7 +218,7 @@ public final class Round {
      */
     public List<Player> getPlayerListCopy() {
         if (null == _playerListCopy) {
-            _playerListCopy = Collections.unmodifiableList(List.copyOf(_playerList));
+            _playerListCopy = List.copyOf(_playerList);
         }
 
         return _playerListCopy;

@@ -9,7 +9,6 @@ import org.mj.comm.util.DateTimeUtil;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
@@ -281,7 +280,7 @@ public final class Room {
      */
     public List<Player> getPlayerListCopy() {
         if (null == _playerListCopy) {
-            _playerListCopy = Collections.unmodifiableList(List.copyOf(_playerList));
+            _playerListCopy = List.copyOf(_playerList);
         }
 
         return _playerListCopy;
@@ -690,7 +689,7 @@ public final class Room {
          * 已结束
          */
         YES(1, "Yes"),
-;
+        ;
 
         /**
          * 整数值
