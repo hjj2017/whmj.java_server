@@ -69,7 +69,7 @@ public class ChatXCmdRouter extends ChannelInboundHandlerAdapter {
         if (null == serverConn ||
             !serverConn.isReady()) {
             LOGGER.error(
-                "未找到合适的战绩服务器来接收消息, msgCode = {}",
+                "未找到合适的聊天服务器来接收消息, msgCode = {}",
                 msgCode
             );
             return;
