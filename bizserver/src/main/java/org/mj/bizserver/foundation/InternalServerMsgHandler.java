@@ -2,23 +2,22 @@ package org.mj.bizserver.foundation;
 
 import com.google.protobuf.GeneratedMessageV3;
 import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import org.mj.bizserver.allmsg.CommProtocol;
 import org.mj.bizserver.allmsg.InternalServerMsg;
+import org.mj.comm.cmdhandler.AbstractCmdHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * 内部服务器消息处理器
  */
-public class InternalMsgHandler extends ChannelDuplexHandler {
+public class InternalServerMsgHandler extends ChannelDuplexHandler {
     /**
      * 日志对象
      */
-    static private final Logger LOGGER = LoggerFactory.getLogger(InternalMsgHandler.class);
+    static private final Logger LOGGER = LoggerFactory.getLogger(InternalServerMsgHandler.class);
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
@@ -26,23 +25,12 @@ public class InternalMsgHandler extends ChannelDuplexHandler {
             return;
         }
 
-        ChannelHandler[] hArray = {
-            new InternalMsgDecoder(),
-            new InternalMsgEncoder(),
-        };
-
-        // 获取信道管线
-        ChannelPipeline pl = ctx.pipeline();
-
-        for (ChannelHandler h : hArray) {
-            // 获取处理器类
-            Class<? extends ChannelHandler>
-                hClazz = h.getClass();
-
-            if (null == pl.get(hClazz)) {
-                pl.addBefore(ctx.name(), hClazz.getSimpleName(), h);
-            }
-        }
+        // 添加编解码器
+        ctx.pipeline().addBefore(
+            ctx.name(),
+            InternalServerMsgCodec.class.getName(),
+            new InternalServerMsgCodec()
+        );
     }
 
     @Override
@@ -68,7 +56,7 @@ public class InternalMsgHandler extends ChannelDuplexHandler {
             );
         }
 
-        MyCmdHandlerContext myCtx = new MyCmdHandlerContext(nettyCtx.channel())
+        AbstractCmdHandlerContext myCtx = new MyCmdHandlerContext(nettyCtx.channel())
             .setProxyServerId(realMsg.getProxyServerId())
             .setRemoteSessionId(realMsg.getRemoteSessionId())
             .setFromUserId(realMsg.getFromUserId())
@@ -80,7 +68,7 @@ public class InternalMsgHandler extends ChannelDuplexHandler {
         // CmdHandlerFactory 类是 MainThreadProcessor 构造器中的一个参数,
         // 它会自动扫描指定包中所有实现了 ICmdHandler 接口的类...
         MainThreadProcessorSingleton.getInstance().process(
-            myCtx, protoMsg
+            (MyCmdHandlerContext) myCtx, protoMsg
         );
 
         realMsg.free();

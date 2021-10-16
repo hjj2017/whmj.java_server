@@ -36,13 +36,13 @@ public class MyCmdHandlerContext extends AbstractCmdHandlerContext {
         // 获取协议消息
         GeneratedMessageV3 protobufMsg = (GeneratedMessageV3) msgObj;
 
-        InternalServerMsg innerMsg = new InternalServerMsg();
-            //.setProxyServerId(getProxyServerId())
-            //.setRemoteSessionId(getRemoteSessionId());
-            //.setClientIP(getClientIP())
-            //.setFromUserId(getFromUserId())
-            //.setMsgCode(MsgRecognizer.getMsgCodeByMsgClazz(protobufMsg.getClass()))
-            //.setMsgBody(protobufMsg.toByteArray());
+        InternalServerMsg innerMsg = new InternalServerMsg()
+            .setProxyServerId(getProxyServerId())
+            .setRemoteSessionId(getRemoteSessionId())
+            .setClientIP(getClientIP())
+            .setFromUserId(getFromUserId())
+            .setMsgCode(MsgRecognizer.getMsgCodeByMsgClazz(protobufMsg.getClass()))
+            .setMsgBody(protobufMsg.toByteArray());
 
         return _proxyServerCh.writeAndFlush(innerMsg);
     }

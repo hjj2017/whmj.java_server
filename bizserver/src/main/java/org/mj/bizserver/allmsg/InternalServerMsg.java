@@ -19,7 +19,7 @@ public final class InternalServerMsg {
     /**
      * 代理服务器 Id
      */
-    private int _proxyServerId;
+    private String _proxyServerId;
 
     /**
      * 远程会话 Id, 也就是客户端连接代理服务器的标识 Id
@@ -29,7 +29,7 @@ public final class InternalServerMsg {
     /**
      * 来自用户 Id
      */
-    private int _fromUserId = -1;
+    private long _fromUserId = -1;
 
     /**
      * 客户端 IP 地址
@@ -51,7 +51,7 @@ public final class InternalServerMsg {
      *
      * @return 代理服务器 Id
      */
-    public int getProxyServerId() {
+    public String getProxyServerId() {
         return _proxyServerId;
     }
 
@@ -59,9 +59,11 @@ public final class InternalServerMsg {
      * 设置代理服务器 Id
      *
      * @param val 代理服务器 Id
+     * @return this 指针
      */
-    public void setProxyServerId(int val) {
+    public InternalServerMsg setProxyServerId(String val) {
         _proxyServerId = val;
+        return this;
     }
 
     /**
@@ -77,9 +79,11 @@ public final class InternalServerMsg {
      * 设置远程会话 Id
      *
      * @param val 远程会话 Id
+     * @return this 指针
      */
-    public void setRemoteSessionId(int val) {
+    public InternalServerMsg setRemoteSessionId(int val) {
         _remoteSessionId = val;
+        return this;
     }
 
     /**
@@ -87,7 +91,7 @@ public final class InternalServerMsg {
      *
      * @return 来自用户 Id
      */
-    public int getFromUserId() {
+    public long getFromUserId() {
         return _fromUserId;
     }
 
@@ -95,9 +99,11 @@ public final class InternalServerMsg {
      * 设置来自用户 Id
      *
      * @param val 来自用户 Id
+     * @return this 指针
      */
-    public void setFromUserId(int val) {
+    public InternalServerMsg setFromUserId(long val) {
         _fromUserId = val;
+        return this;
     }
 
     /**
@@ -133,9 +139,11 @@ public final class InternalServerMsg {
      * 设置消息编码
      *
      * @param val 消息编码
+     * @return this 指针
      */
-    public void setMsgCode(int val) {
+    public InternalServerMsg setMsgCode(int val) {
         _msgCode = val;
+        return this;
     }
 
     /**
@@ -151,9 +159,11 @@ public final class InternalServerMsg {
      * 设置消息体字节数组
      *
      * @param val 消息体字节数组
+     * @return this 指针
      */
-    public void setMsgBody(byte[] val) {
+    public InternalServerMsg setMsgBody(byte[] val) {
         _msgBody = val;
+        return this;
     }
 
     /**
