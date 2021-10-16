@@ -69,7 +69,7 @@ interface MJ_weihai_BizLogic$fireAPlayer {
             return;
         }
 
-        AsyncOperationProcessorSingleton.getInstance().process(
+        AsyncOperationProcessorSingleton.getInstance().process_0(
             // 绑定现成 Id
             currRoom.getRoomId(),
             // 异步 IO 操作

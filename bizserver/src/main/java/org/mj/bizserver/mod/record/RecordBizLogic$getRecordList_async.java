@@ -60,7 +60,7 @@ interface RecordBizLogic$getRecordList_async {
             return;
         }
 
-        AsyncOperationProcessorSingleton.getInstance().process(
+        AsyncOperationProcessorSingleton.getInstance().process_0(
             // 绑定线程 Id
             userId > 0 ? userId : clubId,
             // 异步 IO 操作

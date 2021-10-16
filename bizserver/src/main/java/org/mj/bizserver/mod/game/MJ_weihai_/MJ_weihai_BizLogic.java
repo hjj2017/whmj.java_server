@@ -360,7 +360,7 @@ public final class MJ_weihai_BizLogic implements
             return;
         }
 
-        AsyncOperationProcessorSingleton.getInstance().process(
+        AsyncOperationProcessorSingleton.getInstance().process_0(
             currRoom.getRoomId(),
             () -> cleanUpRedisAndFree(currRoom),
             continueWith
