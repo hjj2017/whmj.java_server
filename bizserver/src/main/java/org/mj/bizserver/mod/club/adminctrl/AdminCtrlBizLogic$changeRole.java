@@ -50,7 +50,7 @@ interface AdminCtrlBizLogic$changeRole {
             return;
         }
 
-        AsyncOperationProcessorSingleton.getInstance().process(
+        AsyncOperationProcessorSingleton.getInstance().process_0(
             // 绑定 Id
             adminId,
             // 异步 IO 操作
