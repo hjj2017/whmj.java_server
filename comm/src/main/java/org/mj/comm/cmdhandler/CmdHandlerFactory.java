@@ -23,7 +23,7 @@ public class CmdHandlerFactory {
     /**
      * 处理器字典
      */
-    private final Map<Class<?>, ICmdHandler<? extends GeneratedMessageV3>> _handlerMap = new ConcurrentHashMap<>();
+    private final Map<Class<?>, ICmdHandler<? extends AbstractCmdHandlerContext, ? extends GeneratedMessageV3>> _handlerMap = new ConcurrentHashMap<>();
 
     /**
      * 扫描 Java 包
@@ -96,7 +96,7 @@ public class CmdHandlerFactory {
 
             try {
                 // 创建指令处理器
-                ICmdHandler<?> cmdHandlerImpl = (ICmdHandler<?>) cmdHandlerClazz.getDeclaredConstructor().newInstance();
+                ICmdHandler<?, ?> cmdHandlerImpl = (ICmdHandler<?, ?>) cmdHandlerClazz.getDeclaredConstructor().newInstance();
 
                 LOGGER.info(
                     "关联 {} <==> {}",
@@ -120,7 +120,7 @@ public class CmdHandlerFactory {
      * @param cmdClazz 命令类
      * @return 命令处理器
      */
-    public ICmdHandler<? extends GeneratedMessageV3> create(Class<?> cmdClazz) {
+    public ICmdHandler<? extends AbstractCmdHandlerContext, ? extends GeneratedMessageV3> create(Class<?> cmdClazz) {
         if (null == cmdClazz) {
             return null;
         }

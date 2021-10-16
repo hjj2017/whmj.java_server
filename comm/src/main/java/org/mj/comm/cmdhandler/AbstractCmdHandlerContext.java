@@ -107,6 +107,15 @@ abstract public class AbstractCmdHandlerContext {
     }
 
     /**
+     * 写出错误
+     *
+     * @param errorCode 错误代码
+     * @param errorMsg  错误消息
+     * @return 信道预期
+     */
+    abstract public ChannelFuture errorAndFlush(int errorCode, String errorMsg);
+
+    /**
      * 写出消息
      *
      * @param msgObj 消息对象

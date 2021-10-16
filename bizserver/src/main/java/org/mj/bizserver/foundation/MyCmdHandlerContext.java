@@ -3,8 +3,11 @@ package org.mj.bizserver.foundation;
 import com.google.protobuf.GeneratedMessageV3;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import org.mj.bizserver.allmsg.CommProtocol;
 import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.comm.cmdhandler.AbstractCmdHandlerContext;
+
+import java.util.Objects;
 
 /**
  * 自定义命令处理器上下文
@@ -23,6 +26,15 @@ public class MyCmdHandlerContext extends AbstractCmdHandlerContext {
     MyCmdHandlerContext(Channel gatewayServerCh) {
         super();
         _proxyServerCh = gatewayServerCh;
+    }
+
+    @Override
+    public ChannelFuture errorAndFlush(int errorCode, String errorMsg) {
+        CommProtocol.ErrorHintResult.Builder b = CommProtocol.ErrorHintResult.newBuilder();
+        b.setErrorCode(errorCode);
+        b.setErrorMsg(Objects.requireNonNullElse(errorMsg, ""));
+
+        return writeAndFlush(b.build());
     }
 
     @Override

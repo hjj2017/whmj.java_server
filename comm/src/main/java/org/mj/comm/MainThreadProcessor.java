@@ -67,7 +67,7 @@ public class MainThreadProcessor {
             // 获取命令类
             final Class<?> cmdClazz = cmdObj.getClass();
             // 创建命令处理器
-            final ICmdHandler<? extends GeneratedMessageV3> cmdHandler = _cmdHandlerFactory.create(cmdClazz);
+            final ICmdHandler<? extends AbstractCmdHandlerContext, ? extends GeneratedMessageV3> cmdHandler = _cmdHandlerFactory.create(cmdClazz);
 
             if (null == cmdHandler) {
                 LOGGER.error(
@@ -82,7 +82,7 @@ public class MainThreadProcessor {
                 cmdClazz.getName()
             );
 
-            cmdHandler.handle(ctx, cast(cmdObj));
+            cmdHandler.handle(cast_0(ctx), cast_1(cmdObj));
         });
     }
 
@@ -98,13 +98,26 @@ public class MainThreadProcessor {
     }
 
     /**
+     * 转型命令处理器上下文对象
+     *
+     * @param ctx    命令处理器上下文对象
+     * @param <TCtx> 命令类型
+     * @return 转型后的命令处理器上下文对象
+     */
+    static private <TCtx extends AbstractCmdHandlerContext> TCtx cast_0(Object ctx) {
+        @SuppressWarnings("unchecked")
+        TCtx tempObj = (TCtx) ctx;
+        return tempObj;
+    }
+
+    /**
      * 转型消息对象
      *
      * @param msgObj 消息对象
      * @param <TCmd> 命令类型
      * @return 转型后的消息对象
      */
-    static private <TCmd extends GeneratedMessageV3> TCmd cast(Object msgObj) {
+    static private <TCmd extends GeneratedMessageV3> TCmd cast_1(Object msgObj) {
         @SuppressWarnings("unchecked")
         TCmd tempObj = (TCmd) msgObj;
         return tempObj;

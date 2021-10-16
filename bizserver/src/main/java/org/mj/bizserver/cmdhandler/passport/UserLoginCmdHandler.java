@@ -1,9 +1,8 @@
 package org.mj.bizserver.cmdhandler.passport;
 
-import io.netty.channel.ChannelHandlerContext;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.allmsg.PassportServerProtocol;
 import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.userlogin.UserLoginBizLogic;
 import org.mj.bizserver.mod.userlogin.bizdata.LoginResult;
 import org.mj.comm.cmdhandler.ICmdHandler;
@@ -13,7 +12,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 用户登录命令处理器
  */
-public class UserLoginCmdHandler implements ICmdHandler<PassportServerProtocol.UserLoginCmd> {
+public class UserLoginCmdHandler implements ICmdHandler<MyCmdHandlerContext, PassportServerProtocol.UserLoginCmd> {
     /**
      * 日志对象
      */
@@ -21,7 +20,7 @@ public class UserLoginCmdHandler implements ICmdHandler<PassportServerProtocol.U
 
     @Override
     public void handle(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, PassportServerProtocol.UserLoginCmd cmdObj) {
+        MyCmdHandlerContext ctx, PassportServerProtocol.UserLoginCmd cmdObj) {
         if (null == cmdObj) {
             return;
         }
@@ -35,31 +34,30 @@ public class UserLoginCmdHandler implements ICmdHandler<PassportServerProtocol.U
         UserLoginBizLogic.getInstance().doUserLogin_async(
             cmdObj.getLoginMethod(),
             cmdObj.getPropertyStr(),
-            (resultX) -> buildResultMsgAndSend(ctx, remoteSessionId, fromUserId, resultX)
+            (resultX) -> buildResultMsgAndSend(
+                ctx, resultX
+            )
         );
     }
 
     /**
      * 构建结果消息并发送
      *
-     * @param ctx             客户端信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param resultX         业务结果
+     * @param ctx     客户端信道处理器上下文
+     * @param resultX 业务结果
      */
     static private void buildResultMsgAndSend(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, BizResultWrapper<LoginResult> resultX) {
+        MyCmdHandlerContext ctx, BizResultWrapper<LoginResult> resultX) {
         if (null == ctx ||
             null == resultX) {
             return;
         }
 
-        final InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-
-        if (0 != newMsg.admitError(resultX)) {
-            ctx.writeAndFlush(newMsg);
+        if (0 != resultX.getErrorCode()) {
+            // 写出错误消息
+            ctx.errorAndFlush(
+                resultX.getErrorCode(), resultX.getErrorMsg()
+            );
             return;
         }
 
@@ -74,9 +72,6 @@ public class UserLoginCmdHandler implements ICmdHandler<PassportServerProtocol.U
         b.setUkeyStr(loginResult.getUkeyStr());
         b.setUkeyExpireAt(loginResult.getUkeyExpireAt());
 
-        PassportServerProtocol.UserLoginResult r = b.build();
-
-        newMsg.putProtoMsg(r);
-        ctx.writeAndFlush(newMsg);
+        ctx.writeAndFlush(b.build());
     }
 }
