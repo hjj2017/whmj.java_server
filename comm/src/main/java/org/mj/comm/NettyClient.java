@@ -41,6 +41,11 @@ public final class NettyClient {
     static private final Logger LOGGER = LoggerFactory.getLogger(NettyServer.class);
 
     /**
+     * 默认线程池
+     */
+    static private final NioEventLoopGroup DEFAULT_WORKER_GROUP = new NioEventLoopGroup();
+
+    /**
      * 使用配置
      */
     private final Config _usingConf;
@@ -182,11 +187,8 @@ public final class NettyClient {
                 headerz
             );
 
-            // Netty NIO 线程池
-            NioEventLoopGroup bossGroup = new NioEventLoopGroup();
-
             Bootstrap b = new Bootstrap();
-            b.group(bossGroup);
+            b.group(DEFAULT_WORKER_GROUP);
             b.channel(NioSocketChannel.class);
             b.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
