@@ -60,13 +60,4 @@ public final class MainThreadProcessorSingleton {
     public void process(Runnable task) {
         _mainTP.process(task);
     }
-
-    /**
-     * 获取真正的主线程处理器
-     *
-     * @return 主线程处理器
-     */
-    MainThreadProcessor getActualMainTP() {
-        return _mainTP;
-    }
 }

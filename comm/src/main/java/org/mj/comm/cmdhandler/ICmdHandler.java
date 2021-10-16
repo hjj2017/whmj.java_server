@@ -16,4 +16,13 @@ public interface ICmdHandler<TCmd extends GeneratedMessageV3> {
      * @param cmdObj          命令对象
      */
     void handle(ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, TCmd cmdObj);
+
+    /**
+     * 处理命令
+     *
+     * @param ctx    命令处理器上下文
+     * @param cmdObj 命令对象
+     */
+    default void handle(AbstractCmdHandlerContext ctx, TCmd cmdObj) {
+    }
 }
