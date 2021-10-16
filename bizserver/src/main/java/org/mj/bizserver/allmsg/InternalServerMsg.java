@@ -32,6 +32,11 @@ public final class InternalServerMsg {
     private int _fromUserId = -1;
 
     /**
+     * 客户端 IP 地址
+     */
+    private String _clientIP = null;
+
+    /**
      * 消息编码
      */
     private int _msgCode;
@@ -93,6 +98,26 @@ public final class InternalServerMsg {
      */
     public void setFromUserId(int val) {
         _fromUserId = val;
+    }
+
+    /**
+     * 获取客户端 IP 地址
+     *
+     * @return 客户端 IP 地址
+     */
+    public String getClientIP() {
+        return _clientIP;
+    }
+
+    /**
+     * 设置客户端 IP 地址
+     *
+     * @param val 客户端 IP 地址
+     * @return this 指针
+     */
+    public InternalServerMsg setClientIP(String val) {
+        _clientIP = val;
+        return this;
     }
 
     /**

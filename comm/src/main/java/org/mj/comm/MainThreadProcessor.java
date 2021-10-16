@@ -1,7 +1,7 @@
 package org.mj.comm;
 
 import com.google.protobuf.GeneratedMessageV3;
-import io.netty.channel.ChannelHandlerContext;
+import org.mj.comm.cmdhandler.AbstractCmdHandlerContext;
 import org.mj.comm.cmdhandler.CmdHandlerFactory;
 import org.mj.comm.cmdhandler.ICmdHandler;
 import org.slf4j.Logger;
@@ -54,12 +54,10 @@ public class MainThreadProcessor {
     /**
      * 处理消息对象
      *
-     * @param ctx             信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param cmdObj          命令对象
+     * @param ctx    命令处理器上下文
+     * @param cmdObj 命令对象
      */
-    public void process(ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, GeneratedMessageV3 cmdObj) {
+    public void process(AbstractCmdHandlerContext ctx, GeneratedMessageV3 cmdObj) {
         if (null == ctx ||
             null == cmdObj) {
             return;
@@ -84,9 +82,7 @@ public class MainThreadProcessor {
                 cmdClazz.getName()
             );
 
-            cmdHandler.handle(
-                ctx, remoteSessionId, fromUserId, cast(cmdObj)
-            );
+            cmdHandler.handle(ctx, cast(cmdObj));
         });
     }
 

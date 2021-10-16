@@ -1,7 +1,6 @@
 package org.mj.bizserver.foundation;
 
 import com.google.protobuf.GeneratedMessageV3;
-import io.netty.channel.ChannelHandlerContext;
 import org.mj.comm.MainThreadProcessor;
 import org.mj.comm.cmdhandler.CmdHandlerFactory;
 
@@ -12,21 +11,21 @@ public final class MainThreadProcessorSingleton {
     /**
      * 单例对象
      */
-    static private final MainThreadProcessorSingleton _instance = new MainThreadProcessorSingleton();
+    static private final MainThreadProcessorSingleton INSTANCE = new MainThreadProcessorSingleton();
 
     /**
      * 主线程处理器
      */
-    private final MainThreadProcessor _mainTP;
+    private final MainThreadProcessor _innerProcessor = new MainThreadProcessor(
+        "bizServer_mainThreadProcessor",
+        new CmdHandlerFactory("org.mj.bizserver.cmdhandler")
+    );
+    ;
 
     /**
-     * 类默认构造器
+     * 私有化类默认构造器
      */
     private MainThreadProcessorSingleton() {
-        _mainTP = new MainThreadProcessor(
-            "bizServer-mainThreadProcessor",
-            new CmdHandlerFactory("org.mj.bizserver.cmdhandler")
-        );
     }
 
     /**
@@ -35,21 +34,17 @@ public final class MainThreadProcessorSingleton {
      * @return 单例对象
      */
     static public MainThreadProcessorSingleton getInstance() {
-        return _instance;
+        return INSTANCE;
     }
 
     /**
      * 处理消息对象
      *
-     * @param ctx             信道处理器上下文
-     * @param remoteSessionId 远程回话 Id
-     * @param fromUserId      来自用户 Id
-     * @param cmdObj          命令对象
+     * @param ctx    命令处理器上下文
+     * @param cmdObj 命令对象
      */
-    public void process(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, GeneratedMessageV3 cmdObj) {
-        // 处理消息对象
-        _mainTP.process(ctx, remoteSessionId, fromUserId, cmdObj);
+    public void process(MyCmdHandlerContext ctx, GeneratedMessageV3 cmdObj) {
+        _innerProcessor.process(ctx, cmdObj);
     }
 
     /**
@@ -58,6 +53,6 @@ public final class MainThreadProcessorSingleton {
      * @param task 任务对象
      */
     public void process(Runnable task) {
-        _mainTP.process(task);
+        _innerProcessor.process(task);
     }
 }

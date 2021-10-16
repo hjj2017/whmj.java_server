@@ -46,8 +46,8 @@ public class InternalMsgHandler extends ChannelDuplexHandler {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msgObj) {
-        if (null == ctx ||
+    public void channelRead(ChannelHandlerContext nettyCtx, Object msgObj) {
+        if (null == nettyCtx ||
             !(msgObj instanceof InternalServerMsg)) {
             return;
         }
@@ -68,16 +68,19 @@ public class InternalMsgHandler extends ChannelDuplexHandler {
             );
         }
 
+        MyCmdHandlerContext myCtx = new MyCmdHandlerContext(nettyCtx.channel())
+            .setProxyServerId(realMsg.getProxyServerId())
+            .setRemoteSessionId(realMsg.getRemoteSessionId())
+            .setFromUserId(realMsg.getFromUserId())
+            .setClientIP(realMsg.getClientIP());
+
         // 处理命令对象
         // XXX 注意: 命令对象具体是由哪个 CmdHandler 处理器的,
         // 可以参考 CmdHandlerFactory 类!
         // CmdHandlerFactory 类是 MainThreadProcessor 构造器中的一个参数,
         // 它会自动扫描指定包中所有实现了 ICmdHandler 接口的类...
         MainThreadProcessorSingleton.getInstance().process(
-            ctx,
-            realMsg.getRemoteSessionId(),
-            realMsg.getFromUserId(),
-            protoMsg
+            myCtx, protoMsg
         );
 
         realMsg.free();
