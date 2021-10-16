@@ -1,10 +1,9 @@
 package org.mj.comm.async;
 
-import org.mj.comm.MainThreadProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Random;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,39 +22,30 @@ public final class AsyncOperationProcessor {
     private final ExecutorService[] _esArray;
 
     /**
-     * 主线程处理器
+     * 类默认构造器
      */
-    private final MainThreadProcessor _mainTP;
-
-    /**
-     * 随机对象
-     */
-    private Random _rand;
+    public AsyncOperationProcessor() {
+        this(null, 0);
+    }
 
     /**
      * 类参数构造器
      *
      * @param processorName 处理器名称
-     * @param threadNum     线程数量
-     * @param mainTP        主线程处理器
-     * @throws IllegalArgumentException if null == mainTP
+     * @param threadCount   线程数量
      */
-    public AsyncOperationProcessor(String processorName, int threadNum, MainThreadProcessor mainTP) {
-        if (null == mainTP) {
-            throw new IllegalArgumentException("mainTP is null");
-        }
-
+    public AsyncOperationProcessor(String processorName, int threadCount) {
         if (null == processorName) {
-            processorName = "AsyncOperationThread";
+            processorName = "AsyncOperationProcessor";
         }
 
-        if (threadNum <= 0) {
-            threadNum = 8;
+        if (threadCount <= 0) {
+            threadCount = Runtime.getRuntime().availableProcessors() * 2;
         }
 
-        _esArray = new ExecutorService[threadNum];
+        _esArray = new ExecutorService[threadCount];
 
-        for (int i = 0; i < threadNum; i++) {
+        for (int i = 0; i < threadCount; i++) {
             // 线程名称
             final String threadName = processorName + "[" + i + "]";
             // 创建单线程服务
@@ -66,18 +56,20 @@ public final class AsyncOperationProcessor {
                 return t;
             });
         }
-
-        _mainTP = mainTP;
     }
 
     /**
-     * 处理异步操作
+     * 处理异步操作,
+     * 1、通过 bindId 来选择一个异步线程;
+     * 2、执行 op 操作;
+     * 3、op 执行完成之后将 co 扔给 exec 线程继续执行；
      *
      * @param bindId 绑定 ( 线程 ) Id
      * @param op     异步操作对象
-     * @param con    同步继续执行
+     * @param exec   同步执行线程
+     * @param co     同步继续执行
      */
-    public void process(int bindId, IAsyncOperation op, IContinueWith con) {
+    public void process(int bindId, IAsyncOperation op, Executor exec, IContinueWith co) {
         if (null == op) {
             return;
         }
@@ -91,9 +83,10 @@ public final class AsyncOperationProcessor {
                 // 执行异步操作
                 op.doAsync();
 
-                if (null != con) {
+                if (null != exec &&
+                    null != co) {
                     // 回到主消息线程继续执行完成逻辑
-                    _mainTP.process(con::doContinue);
+                    exec.execute(co::doContinue);
                 }
             } catch (Exception ex) {
                 // 记录错误日志
@@ -109,41 +102,6 @@ public final class AsyncOperationProcessor {
      * @param op     异步操作
      */
     public void process(int bindId, IAsyncOperation op) {
-        process(bindId, op, null);
-    }
-
-    /**
-     * 处理异步操作
-     *
-     * @param op  异步操作
-     * @param con 同步继续执行
-     */
-    public void process(IAsyncOperation op, IContinueWith con) {
-        if (null == op) {
-            return;
-        }
-
-        if (null == _rand) {
-            synchronized (this) {
-                if (null == _rand) {
-                    _rand = new Random();
-                }
-            }
-        }
-
-        int bindId = _rand.nextInt(_esArray.length);
-
-        process(
-            bindId, op, con
-        );
-    }
-
-    /**
-     * 处理异步操作
-     *
-     * @param op 异步操作
-     */
-    public void process(IAsyncOperation op) {
-        process(op, null);
+        process(bindId, op, null, null);
     }
 }

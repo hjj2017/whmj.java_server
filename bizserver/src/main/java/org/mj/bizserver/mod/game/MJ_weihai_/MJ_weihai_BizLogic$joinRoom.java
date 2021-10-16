@@ -42,7 +42,7 @@ interface MJ_weihai_BizLogic$joinRoom {
             return;
         }
 
-        AsyncOperationProcessorSingleton.getInstance().process(
+        AsyncOperationProcessorSingleton.getInstance().process_0(
             // 绑定线程 Id
             roomId,
             // 异步 IO 操作

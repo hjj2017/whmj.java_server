@@ -65,7 +65,7 @@ interface MemberCenterBizLogic$getMemberInfoList {
             return;
         }
 
-        AsyncOperationProcessorSingleton.getInstance().process(
+        AsyncOperationProcessorSingleton.getInstance().process_0(
             // 绑定 Id
             clubId,
             // 异步 IO 操作

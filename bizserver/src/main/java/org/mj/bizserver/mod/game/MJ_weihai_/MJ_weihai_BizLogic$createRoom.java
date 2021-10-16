@@ -90,7 +90,7 @@ interface MJ_weihai_BizLogic$createRoom {
             return;
         }
 
-        AsyncOperationProcessorSingleton.getInstance().process(
+        AsyncOperationProcessorSingleton.getInstance().process_0(
             // 绑定线程 Id
             userId,
             // 异步 IO 操作
@@ -203,7 +203,7 @@ interface MJ_weihai_BizLogic$createRoom {
             return;
         }
 
-        AsyncOperationProcessorSingleton.getInstance().process(
+        AsyncOperationProcessorSingleton.getInstance().process_0(
             // 绑定线程 Id
             userId,
             // 异步 IO 操作

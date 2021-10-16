@@ -76,7 +76,7 @@ interface UserLoginBizLogic$doUserLogin {
         }
 
         // 执行异步操作
-        AsyncOperationProcessorSingleton.getInstance().process(
+        AsyncOperationProcessorSingleton.getInstance().process_0(
             // 绑定 ( 线程 ) Id
             oauth.getAsyncOpId(),
             // 异步 IO 操作

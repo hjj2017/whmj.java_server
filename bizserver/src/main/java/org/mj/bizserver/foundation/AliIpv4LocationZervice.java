@@ -135,7 +135,7 @@ public final class AliIpv4LocationZervice {
             return;
         }
 
-        AsyncOperationProcessorSingleton.getInstance().process(
+        AsyncOperationProcessorSingleton.getInstance().process_0(
             // 绑定 Id
             RAND.nextInt(_workerQueue.size()),
             // 异步 IO 操作
