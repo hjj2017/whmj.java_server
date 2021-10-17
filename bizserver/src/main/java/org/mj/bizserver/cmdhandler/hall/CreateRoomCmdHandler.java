@@ -1,11 +1,10 @@
 package org.mj.bizserver.cmdhandler.hall;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.HallServerProtocol;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.def.GameType0Enum;
 import org.mj.bizserver.def.GameType1Enum;
 import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.game.MJ_weihai_.MJ_weihai_BizLogic;
 import org.mj.comm.cmdhandler.ICmdHandler;
 import org.slf4j.Logger;
@@ -23,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 虽然看上去还是大厅的代码,
  * 但真正的运行进程是在游戏服务器上!
  */
-public final class CreateRoomCmdHandler implements ICmdHandler<HallServerProtocol.CreateRoomCmd> {
+public final class CreateRoomCmdHandler implements ICmdHandler<MyCmdHandlerContext, HallServerProtocol.CreateRoomCmd> {
     /**
      * 日志对象
      */
@@ -31,9 +30,7 @@ public final class CreateRoomCmdHandler implements ICmdHandler<HallServerProtoco
 
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         HallServerProtocol.CreateRoomCmd cmdObj) {
 
         Map<Integer, Integer> ruleMap = new ConcurrentHashMap<>(cmdObj.getRuleItemCount());
@@ -55,14 +52,14 @@ public final class CreateRoomCmdHandler implements ICmdHandler<HallServerProtoco
             GameType1Enum.MJ_weihai_ == gameType1) {
             // 威海麻将
             MJ_weihai_BizLogic.getInstance().createRoom_async(
-                fromUserId,
+                ctx.getFromUserId(),
                 ruleMap,
-                (resultX) -> buildResultMsgAndSend(ctx, remoteSessionId, fromUserId, resultX)
+                (resultX) -> buildResultMsgAndSend(ctx, resultX)
             );
         } else {
             LOGGER.error(
                 "未知游戏类型, userId = {}, gameType0 = {}, gameType1 = {}",
-                fromUserId,
+                ctx.getFromUserId(),
                 cmdObj.getGameType0(),
                 cmdObj.getGameType1()
             );
@@ -72,24 +69,20 @@ public final class CreateRoomCmdHandler implements ICmdHandler<HallServerProtoco
     /**
      * 构建消息并发送
      *
-     * @param ctx             客户端信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param resultX         业务结果
+     * @param ctx     客户端信道处理器上下文
+     * @param resultX 业务结果
      */
     static private void buildResultMsgAndSend(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, BizResultWrapper<Integer> resultX) {
+        MyCmdHandlerContext ctx, BizResultWrapper<Integer> resultX) {
         if (null == ctx ||
             null == resultX) {
             return;
         }
 
-        InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-
-        if (0 != newMsg.admitError(resultX)) {
-            ctx.writeAndFlush(newMsg);
+        if (0 != resultX.getErrorCode()) {
+            ctx.errorAndFlush(
+                resultX.getErrorCode(), resultX.getErrorMsg()
+            );
             return;
         }
 
@@ -101,7 +94,6 @@ public final class CreateRoomCmdHandler implements ICmdHandler<HallServerProtoco
 
         HallServerProtocol.CreateRoomResult r = b.build();
 
-        newMsg.putProtoMsg(r);
-        ctx.writeAndFlush(newMsg);
+        ctx.writeAndFlush(r);
     }
 }

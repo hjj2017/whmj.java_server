@@ -110,7 +110,7 @@ public final class AliSMSAuthZervice {
         );
 
         for (int i = 0; i < usingConf.getWorkerCount(); i++) {
-            _workerQueue.offer(new DefaultAcsClient(
+            _workerQueue.add(new DefaultAcsClient(
                 defaultProfile
             ));
         }
@@ -332,7 +332,7 @@ public final class AliSMSAuthZervice {
                 // 执行到最后,
                 // 如果 OSS 客户端不为空,
                 // 则塞回到工作队列...
-                _workerQueue.offer(acsClient);
+                _workerQueue.add(acsClient);
             }
         }
     }
