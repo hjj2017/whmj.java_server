@@ -1,11 +1,9 @@
 package org.mj.bizserver.cmdhandler.chat;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.ChatServerProtocol;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.foundation.AsyncOperationProcessorSingleton;
-import org.mj.bizserver.foundation.IdSetterGetter;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.foundation.ProxyServerChannelGroup;
 import org.mj.comm.cmdhandler.ICmdHandler;
 import org.slf4j.Logger;
@@ -16,7 +14,7 @@ import java.util.List;
 /**
  * 发送表情指令处理器
  */
-public class SendEmojiCmdHandler implements ICmdHandler<ChatServerProtocol.SendEmojiCmd> {
+public class SendEmojiCmdHandler implements ICmdHandler<MyCmdHandlerContext, ChatServerProtocol.SendEmojiCmd> {
     /**
      * 日志对象
      */
@@ -24,27 +22,23 @@ public class SendEmojiCmdHandler implements ICmdHandler<ChatServerProtocol.SendE
 
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         ChatServerProtocol.SendEmojiCmd cmdObj) {
 
         if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0 ||
             null == cmdObj) {
             return;
         }
 
         LOGGER.debug(
             "收到表情, fromUserId = {}, msgId = {}",
-            fromUserId,
+            ctx.getFromUserId(),
             cmdObj.getEmojiId()
         );
 
         AsyncOperationProcessorSingleton.getInstance().process(
             () -> buildResultMsgAndSend(
-                ctx, remoteSessionId, fromUserId,
+                ctx,
                 cmdObj.getEmojiId()
             )
         );
@@ -53,16 +47,11 @@ public class SendEmojiCmdHandler implements ICmdHandler<ChatServerProtocol.SendE
     /**
      * 构建结果消息并发送
      *
-     * @param ctx             客户端信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param emojiId         表情 Id
+     * @param ctx     客户端信道处理器上下文
+     * @param emojiId 表情 Id
      */
-    static private void buildResultMsgAndSend(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, int emojiId) {
-        if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0) {
+    static private void buildResultMsgAndSend(MyCmdHandlerContext ctx, int emojiId) {
+        if (null == ctx) {
             return;
         }
 
@@ -71,16 +60,10 @@ public class SendEmojiCmdHandler implements ICmdHandler<ChatServerProtocol.SendE
             .setOk(true)
             .build();
 
-        InternalServerMsg msg0 = new InternalServerMsg();
-        msg0.setProxyServerId(IdSetterGetter.getProxyServerId(ctx));
-        msg0.setRemoteSessionId(remoteSessionId);
-        msg0.setFromUserId(fromUserId);
-        msg0.putProtoMsg(r);
-
-        ctx.writeAndFlush(msg0);
+        ctx.writeAndFlush(r);
 
         // 根据用户 Id 搜寻同在一个房间内的其他玩家
-        List<RoomPlayerSearcher.SearchResult> otherPlayerList = RoomPlayerSearcher.searchOtherzByUserId(fromUserId);
+        List<RoomPlayerSearcher.SearchResult> otherPlayerList = RoomPlayerSearcher.searchOtherzByUserId(ctx.getFromUserId());
 
         if (null == otherPlayerList ||
             otherPlayerList.isEmpty()) {
@@ -109,18 +92,12 @@ public class SendEmojiCmdHandler implements ICmdHandler<ChatServerProtocol.SendE
 
             if (null == b) {
                 b = ChatServerProtocol.SendEmojiBroadcast.newBuilder()
-                    .setFromUserId(fromUserId)
+                    .setFromUserId(ctx.getFromUserId())
                     .setEmojiId(emojiId)
                     .build();
             }
 
-            InternalServerMsg msg1 = new InternalServerMsg();
-            msg1.setProxyServerId(IdSetterGetter.getProxyServerId(ctx));
-            msg1.setRemoteSessionId(otherPlayer.getRemoteSessionId());
-            msg1.setFromUserId(otherPlayer.getUserId());
-            msg1.putProtoMsg(b);
-
-            proxyServerCh.writeAndFlush(msg1);
+            proxyServerCh.writeAndFlush(b);
         }
     }
 }
