@@ -2,7 +2,6 @@ package org.mj.bizserver.cmdhandler.game.MJ_weihai_;
 
 import com.google.protobuf.GeneratedMessageV3;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Player;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Room;
@@ -35,19 +34,6 @@ public final class GameBroadcaster {
      * 类默认构造器
      */
     private GameBroadcaster() {
-    }
-
-    /**
-     * 添加信道
-     *
-     * @param ctx             信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param userId          用户 Id
-     */
-    static public void add(ChannelHandlerContext ctx, int remoteSessionId, int userId) {
-        if (null != ctx) {
-            add(ctx.channel(), remoteSessionId, userId);
-        }
     }
 
     /**

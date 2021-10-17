@@ -54,7 +54,7 @@ public final class InternalServerMsgCodec extends CombinedChannelDuplexHandler<I
                 innerMsg.setProxyServerId(readStr(byteBuf));    // proxyServerId
                 innerMsg.setRemoteSessionId(byteBuf.readInt()); // remoteSessionId
                 innerMsg.setClientIP(readStr(byteBuf));         // clientIP
-                innerMsg.setFromUserId(byteBuf.readLong());     // fromUserId
+                innerMsg.setFromUserId(byteBuf.readInt());      // fromUserId
                 innerMsg.setMsgCode(byteBuf.readInt());         // msgCode
 
                 // 消息内容

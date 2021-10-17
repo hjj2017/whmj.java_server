@@ -1,12 +1,10 @@
 package org.mj.bizserver.cmdhandler.hall;
 
-import io.netty.channel.ChannelHandlerContext;
-import org.mj.bizserver.allmsg.CommProtocol;
 import org.mj.bizserver.allmsg.HallServerProtocol;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.def.ErrorEnum;
 import org.mj.bizserver.def.RedisKeyDef;
 import org.mj.bizserver.foundation.AsyncOperationProcessorSingleton;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.game.MJ_weihai_.MJ_weihai_BizLogic;
 import org.mj.comm.cmdhandler.ICmdHandler;
 import org.mj.comm.util.RedisXuite;
@@ -23,7 +21,7 @@ import redis.clients.jedis.Jedis;
  * 虽然看上去还是大厅的代码,
  * 但真正的运行进程是在游戏服务器上!
  */
-public final class JoinRoomCmdHandler implements ICmdHandler<HallServerProtocol.JoinRoomCmd> {
+public final class JoinRoomCmdHandler implements ICmdHandler<MyCmdHandlerContext, HallServerProtocol.JoinRoomCmd> {
     /**
      * 日志对象
      */
@@ -31,14 +29,10 @@ public final class JoinRoomCmdHandler implements ICmdHandler<HallServerProtocol.
 
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         HallServerProtocol.JoinRoomCmd cmdObj) {
 
         if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0 ||
             null == cmdObj) {
             return;
         }
@@ -48,44 +42,31 @@ public final class JoinRoomCmdHandler implements ICmdHandler<HallServerProtocol.
 
         if (MJ_weihai_BizLogic.getInstance().hasRoom(roomId)) {
             // 威海麻将加入房间
-            JoinRoomCmdHandler_MJ_weihai_.handle(ctx, remoteSessionId, fromUserId, cmdObj);
+            JoinRoomCmdHandler_MJ_weihai_.handle(ctx, cmdObj);
             return;
         }
 
         LOGGER.error(
             "无法加入的房间 Id, 房间不存在! userId = {}, roomId = {}",
-            fromUserId, roomId
+            ctx.getFromUserId(), roomId
         );
 
-        InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-        newMsg.putProtoMsg(
-            CommProtocol.ErrorHintResult.newBuilder()
-                .setErrorCode(ErrorEnum.GAME__ROOM_NOT_EXIST.getErrorCode())
-                .setErrorMsg(ErrorEnum.GAME__ROOM_NOT_EXIST.getErrorMsg())
-                .build()
+        ctx.errorAndFlush(
+            ErrorEnum.GAME__ROOM_NOT_EXIST.getErrorCode(),
+            ErrorEnum.GAME__ROOM_NOT_EXIST.getErrorMsg()
         );
-
-        ctx.writeAndFlush(newMsg);
 
         // 发送一个空 Id 消息,
         // 客户端会通过这个消息撤掉加载窗口
-        newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-        newMsg.putProtoMsg(
-            HallServerProtocol.JoinRoomResult.newBuilder()
-                .setRoomId(-1)
-                .setGameType0(-1)
-                .setGameType1(-1)
-                .build()
+        ctx.writeAndFlush(HallServerProtocol.JoinRoomResult.newBuilder()
+            .setRoomId(-1)
+            .setGameType0(-1)
+            .setGameType1(-1)
+            .build()
         );
 
-        ctx.writeAndFlush(newMsg);
-
         // （ 异步方式 ） 清理用户所在房间
-        clearUserAtRoom_async(fromUserId, roomId);
+        clearUserAtRoom_async(ctx.getFromUserId(), roomId);
     }
 
     /**

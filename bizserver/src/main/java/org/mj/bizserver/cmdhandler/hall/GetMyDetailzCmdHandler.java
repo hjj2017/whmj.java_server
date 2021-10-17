@@ -1,9 +1,8 @@
 package org.mj.bizserver.cmdhandler.hall;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.HallServerProtocol;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.userinfo.UserInfoBizLogic;
 import org.mj.bizserver.mod.userinfo.bizdata.UserDetailz;
 import org.mj.comm.cmdhandler.ICmdHandler;
@@ -11,39 +10,35 @@ import org.mj.comm.cmdhandler.ICmdHandler;
 /**
  * 获取我的详情
  */
-public class GetMyDetailzCmdHandler implements ICmdHandler<HallServerProtocol.GetMyDetailzCmd> {
+public class GetMyDetailzCmdHandler implements ICmdHandler<MyCmdHandlerContext, HallServerProtocol.GetMyDetailzCmd> {
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         HallServerProtocol.GetMyDetailzCmd cmdObj) {
 
         UserInfoBizLogic.getInstance().getUserDetailzByUserId_async(
-            fromUserId,
-            (resultX) -> buildResultMsgAndSend(ctx, remoteSessionId, fromUserId, resultX)
+            ctx.getFromUserId(),
+            (resultX) -> buildResultMsgAndSend(ctx, resultX)
         );
     }
 
     /**
-     * @param ctx             客户端信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param resultX         业务结果
+     * 构建结果消息并发送
+     *
+     * @param ctx     客户端信道处理器上下文
+     * @param resultX 业务结果
      */
     static private void buildResultMsgAndSend(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, BizResultWrapper<UserDetailz> resultX) {
+        MyCmdHandlerContext ctx, BizResultWrapper<UserDetailz> resultX) {
         if (null == ctx ||
             null == resultX) {
             return;
         }
 
-        InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-
-        if (0 != newMsg.admitError(resultX)) {
-            ctx.writeAndFlush(newMsg);
+        if (0 != resultX.getErrorCode()) {
+            ctx.errorAndFlush(
+                resultX.getErrorCode(), resultX.getErrorMsg()
+            );
             return;
         }
 
@@ -63,7 +58,6 @@ public class GetMyDetailzCmdHandler implements ICmdHandler<HallServerProtocol.Ge
 
         HallServerProtocol.GetMyDetailzResult r = b.build();
 
-        newMsg.putProtoMsg(r);
-        ctx.writeAndFlush(newMsg);
+        ctx.writeAndFlush(r);
     }
 }

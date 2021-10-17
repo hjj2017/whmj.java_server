@@ -28,6 +28,15 @@ public class MyCmdHandlerContext extends AbstractCmdHandlerContext {
         _proxyServerCh = gatewayServerCh;
     }
 
+    /**
+     * 获取 Netty 信道
+     *
+     * return Netty 信道
+     */
+    public Channel getNettyChannel() {
+        return _proxyServerCh;
+    }
+
     @Override
     public ChannelFuture errorAndFlush(int errorCode, String errorMsg) {
         CommProtocol.ErrorHintResult.Builder b = CommProtocol.ErrorHintResult.newBuilder();

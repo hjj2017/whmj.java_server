@@ -29,7 +29,7 @@ public final class InternalServerMsg {
     /**
      * 来自用户 Id
      */
-    private long _fromUserId = -1;
+    private int _fromUserId = -1;
 
     /**
      * 客户端 IP 地址
@@ -91,7 +91,7 @@ public final class InternalServerMsg {
      *
      * @return 来自用户 Id
      */
-    public long getFromUserId() {
+    public int getFromUserId() {
         return _fromUserId;
     }
 
@@ -101,7 +101,7 @@ public final class InternalServerMsg {
      * @param val 来自用户 Id
      * @return this 指针
      */
-    public InternalServerMsg setFromUserId(long val) {
+    public InternalServerMsg setFromUserId(int val) {
         _fromUserId = val;
         return this;
     }

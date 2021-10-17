@@ -38,11 +38,9 @@ public final class CreateRoomCmdHandler implements ICmdHandler<MyCmdHandlerConte
         for (int i = 0; i < cmdObj.getRuleItemCount(); i++) {
             HallServerProtocol.KeyAndVal ruleItem = cmdObj.getRuleItem(i);
 
-            if (null != ruleItem) {
-                ruleMap.putIfAbsent(
-                    ruleItem.getKey(), ruleItem.getVal()
-                );
-            }
+            ruleMap.putIfAbsent(
+                ruleItem.getKey(), ruleItem.getVal()
+            );
         }
 
         GameType0Enum gameType0 = GameType0Enum.valueOf(cmdObj.getGameType0());

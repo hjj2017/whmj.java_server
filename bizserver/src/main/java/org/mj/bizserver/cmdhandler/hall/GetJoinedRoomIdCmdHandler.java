@@ -1,10 +1,9 @@
 package org.mj.bizserver.cmdhandler.hall;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.HallServerProtocol;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.def.RedisKeyDef;
 import org.mj.bizserver.foundation.AsyncOperationProcessorSingleton;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.comm.cmdhandler.ICmdHandler;
 import org.mj.comm.util.RedisXuite;
 import org.slf4j.Logger;
@@ -15,7 +14,7 @@ import redis.clients.jedis.Jedis;
  * 获取已经加入的房间 Id
  * XXX 注意: 该指令处理器将运行在大厅服务器进程中
  */
-public class GetJoinedRoomIdCmdHandler implements ICmdHandler<HallServerProtocol.GetJoinedRoomIdCmd> {
+public class GetJoinedRoomIdCmdHandler implements ICmdHandler<MyCmdHandlerContext, HallServerProtocol.GetJoinedRoomIdCmd> {
     /**
      * 日志对象
      */
@@ -23,20 +22,16 @@ public class GetJoinedRoomIdCmdHandler implements ICmdHandler<HallServerProtocol
 
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         HallServerProtocol.GetJoinedRoomIdCmd cmdObj) {
 
         AsyncOperationProcessorSingleton.getInstance().process(
             // 绑定 Id
-            fromUserId,
+            ctx.getFromUserId(),
             // 执行异步操作
             () -> buildResultMsgAndSend(
                 ctx, // 信道处理器上下文
-                remoteSessionId,
-                fromUserId,
-                getUserAtRoomId(fromUserId)
+                getUserAtRoomId(ctx.getFromUserId())
             )
         );
     }
@@ -44,16 +39,11 @@ public class GetJoinedRoomIdCmdHandler implements ICmdHandler<HallServerProtocol
     /**
      * 构建结果消息并发送
      *
-     * @param ctx             信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param userAtRoomId    用户所在房间 Id
+     * @param ctx          信道处理器上下文
+     * @param userAtRoomId 用户所在房间 Id
      */
-    static private void buildResultMsgAndSend(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, int userAtRoomId) {
-        if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0) {
+    static private void buildResultMsgAndSend(MyCmdHandlerContext ctx, int userAtRoomId) {
+        if (null == ctx) {
             return;
         }
 
@@ -63,12 +53,7 @@ public class GetJoinedRoomIdCmdHandler implements ICmdHandler<HallServerProtocol
 
         HallServerProtocol.GetJoinedRoomIdResult r = b.build();
 
-        InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-        newMsg.putProtoMsg(r);
-
-        ctx.writeAndFlush(newMsg);
+        ctx.writeAndFlush(r);
     }
 
     /**

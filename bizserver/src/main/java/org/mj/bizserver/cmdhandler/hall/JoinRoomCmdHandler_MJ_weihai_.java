@@ -1,11 +1,10 @@
 package org.mj.bizserver.cmdhandler.hall;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.HallServerProtocol;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.allmsg.MJ_weihai_Protocol;
 import org.mj.bizserver.cmdhandler.game.MJ_weihai_.GameBroadcaster;
 import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.game.MJ_weihai_.MJ_weihai_BizLogic;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Player;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Room;
@@ -27,13 +26,11 @@ class JoinRoomCmdHandler_MJ_weihai_ {
     /**
      * 处理消息指令
      *
-     * @param ctx             信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param cmdObj          指令对象
+     * @param ctx    信道处理器上下文
+     * @param cmdObj 指令对象
      */
     static void handle(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, HallServerProtocol.JoinRoomCmd cmdObj) {
+        MyCmdHandlerContext ctx, HallServerProtocol.JoinRoomCmd cmdObj) {
 
         // 获取房间 Id
         final int roomId = cmdObj.getRoomId();
@@ -41,70 +38,71 @@ class JoinRoomCmdHandler_MJ_weihai_ {
         if (!MJ_weihai_BizLogic.getInstance().hasRoom(roomId)) {
             LOGGER.error(
                 "房间 Id 不存在, userId = {}, roomId = {}",
-                fromUserId, roomId
+                ctx.getFromUserId(), roomId
             );
             return;
         }
 
         MJ_weihai_BizLogic.getInstance().joinRoom_async(
-            fromUserId,
+            ctx.getFromUserId(),
             roomId,
-            (resultX) -> buildMsgAndSend(ctx, remoteSessionId, fromUserId, resultX)
+            (resultX) -> buildMsgAndSend(ctx, resultX)
         );
     }
 
     /**
      * 构建消息并发送
      *
-     * @param ctx             客户端信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param resultX         业务结果
+     * @param ctx     客户端信道处理器上下文
+     * @param resultX 业务结果
      */
     static private void buildMsgAndSend(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, BizResultWrapper<Room> resultX) {
+        MyCmdHandlerContext ctx, BizResultWrapper<Room> resultX) {
         // 构建结果并发送
         buildResultAndSend(
-            ctx, remoteSessionId, fromUserId, resultX
+            ctx, resultX
         );
         // 构建广播并发送
         buildBroadcastAndSend(
-            ctx, fromUserId, resultX
+            ctx, resultX
         );
     }
 
     /**
      * 构建结果并发送
      *
-     * @param ctx             信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param resultX         业务结果
+     * @param ctx     信道处理器上下文
+     * @param resultX 业务结果
      */
     static private void buildResultAndSend(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, BizResultWrapper<Room> resultX) {
+        MyCmdHandlerContext ctx, BizResultWrapper<Room> resultX) {
         if (null == ctx ||
             null == resultX) {
             return;
         }
 
-        InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-
-        if (0 != newMsg.admitError(resultX)) {
-            ctx.writeAndFlush(newMsg);
+        if (0 != resultX.getErrorCode()) {
+            ctx.errorAndFlush(
+                resultX.getErrorCode(), resultX.getErrorMsg()
+            );
             return;
         }
 
         // 添加到广播器
-        GameBroadcaster.add(ctx, remoteSessionId, fromUserId);
+        GameBroadcaster.add(
+            ctx.getNettyChannel(),
+            ctx.getRemoteSessionId(),
+            ctx.getFromUserId()
+        );
 
         // 获取加入房间
         Room joinedRoom = resultX.getFinalResult();
 
         if (null == joinedRoom) {
-            LOGGER.error("加入房间为空, userId = {}", fromUserId);
+            LOGGER.error(
+                "加入房间为空, userId = {}",
+                ctx.getFromUserId()
+            );
             return;
         }
 
@@ -127,19 +125,17 @@ class JoinRoomCmdHandler_MJ_weihai_ {
 
         HallServerProtocol.JoinRoomResult r = b0.build();
 
-        newMsg.putProtoMsg(r);
-        ctx.writeAndFlush(newMsg);
+        ctx.writeAndFlush(r);
     }
 
     /**
      * 构建广播消息
      *
-     * @param ctx        信道处理器上下文
-     * @param fromUserId 来自用户 Id
-     * @param resultX    业务结果
+     * @param ctx     信道处理器上下文
+     * @param resultX 业务结果
      */
     static private void buildBroadcastAndSend(
-        ChannelHandlerContext ctx, int fromUserId, BizResultWrapper<Room> resultX) {
+        MyCmdHandlerContext ctx, BizResultWrapper<Room> resultX) {
         if (null == ctx ||
             null == resultX ||
             0 != resultX.getErrorCode()) {
@@ -150,17 +146,20 @@ class JoinRoomCmdHandler_MJ_weihai_ {
         Room joinedRoom = resultX.getFinalResult();
 
         if (null == joinedRoom) {
-            LOGGER.error("加入房间为空, userId = {}", fromUserId);
+            LOGGER.error(
+                "加入房间为空, userId = {}",
+                ctx.getFromUserId()
+            );
             return;
         }
 
         // 获取房间内的玩家
-        Player p = joinedRoom.getPlayerByUserId(fromUserId);
+        Player p = joinedRoom.getPlayerByUserId(ctx.getFromUserId());
 
         if (null == p) {
             LOGGER.error(
                 "玩家没有加入该房间, userId = {}, roomId = {}",
-                fromUserId,
+                ctx.getFromUserId(),
                 joinedRoom.getRoomId()
             );
             return;
