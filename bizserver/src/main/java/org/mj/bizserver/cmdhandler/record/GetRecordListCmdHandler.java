@@ -1,11 +1,10 @@
 package org.mj.bizserver.cmdhandler.record;
 
-import io.netty.channel.ChannelHandlerContext;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.allmsg.RecordServerProtocol;
 import org.mj.bizserver.def.GameType0Enum;
 import org.mj.bizserver.def.GameType1Enum;
 import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.record.RecordBizLogic;
 import org.mj.bizserver.mod.record.bizdata.Player;
 import org.mj.bizserver.mod.record.bizdata.RecordSummary;
@@ -17,17 +16,13 @@ import java.util.List;
 /**
  * 获取战绩列表指令处理器
  */
-public class GetRecordListCmdHandler implements ICmdHandler<RecordServerProtocol.GetRecordListCmd> {
+public class GetRecordListCmdHandler implements ICmdHandler<MyCmdHandlerContext, RecordServerProtocol.GetRecordListCmd> {
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         RecordServerProtocol.GetRecordListCmd cmdObj) {
 
-        if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0) {
+        if (null == ctx) {
             return;
         }
 
@@ -48,7 +43,7 @@ public class GetRecordListCmdHandler implements ICmdHandler<RecordServerProtocol
             cmdObj.getPageSize(),
             out_totalCount,
             (resultX) -> buildResultMsgAndSend(
-                ctx, remoteSessionId, fromUserId, userId, clubId, gameType0, gameType1, pageIndex,
+                ctx, userId, clubId, gameType0, gameType1, pageIndex,
                 OutParam.optVal(out_totalCount, 0),
                 resultX
             )
@@ -58,17 +53,17 @@ public class GetRecordListCmdHandler implements ICmdHandler<RecordServerProtocol
     /**
      * 构建结果消息并发送
      *
-     * @param ctx             客户端信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param pageIndex       页面索引
-     * @param totalCount      记录总数
-     * @param resultX         业务结果
+     * @param ctx        客户端信道处理器上下文
+     * @param userId     用户 Id
+     * @param clubId     亲友圈 Id
+     * @param gameType0  游戏类型 0
+     * @param gameType1  游戏类型 1
+     * @param pageIndex  页面索引
+     * @param totalCount 记录总数
+     * @param resultX    业务结果
      */
     static private void buildResultMsgAndSend(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         int userId,
         int clubId,
         GameType0Enum gameType0,
@@ -77,12 +72,10 @@ public class GetRecordListCmdHandler implements ICmdHandler<RecordServerProtocol
         int totalCount,
         BizResultWrapper<List<RecordSummary>> resultX) {
 
-        final InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-
-        if (0 != newMsg.admitError(resultX)) {
-            ctx.writeAndFlush(newMsg);
+        if (0 != resultX.getErrorCode()) {
+            ctx.errorAndFlush(
+                resultX.getErrorCode(), resultX.getErrorMsg()
+            );
             return;
         }
 
@@ -98,8 +91,8 @@ public class GetRecordListCmdHandler implements ICmdHandler<RecordServerProtocol
         fillRecordList(b0, resultX.getFinalResult());
 
         RecordServerProtocol.GetRecordListResult r = b0.build();
-        newMsg.putProtoMsg(r);
-        ctx.writeAndFlush(newMsg);
+
+        ctx.writeAndFlush(r);
     }
 
     /**
