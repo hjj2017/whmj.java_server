@@ -32,7 +32,7 @@ public final class AsyncOperationProcessorSingleton {
     /**
      * 主线程执行器
      */
-    private final Executor _mainThreadExecutor = (cmd) -> MainThreadProcessorSingleton.getInstance().process(cmd);
+    private final Executor _mainThreadExecutor = MainThreadProcessorSingleton.getInstance()::process;
 
     /**
      * 私有化类默认构造器
