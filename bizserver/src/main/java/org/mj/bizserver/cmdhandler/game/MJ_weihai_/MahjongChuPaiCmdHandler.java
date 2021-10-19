@@ -11,18 +11,8 @@ import org.mj.comm.cmdhandler.ICmdHandler;
 /**
  * 麻将出牌指令处理器
  */
-public final class MahjongChuPaiCmdHandler extends AbstractInGameCmdHandler<MJ_weihai_Protocol.MahjongChuPaiCmd>
-    implements ICmdHandler<MJ_weihai_Protocol.MahjongChuPaiCmd> {
-
-    @Override
-    public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
-        MJ_weihai_Protocol.MahjongChuPaiCmd cmdObj) {
-        // 将复杂工作交给代理, 我只执行省心的调用
-        super.doProxyInvoke(ctx, remoteSessionId, fromUserId, cmdObj);
-    }
+public final class MahjongChuPaiCmdHandler
+    extends AbstractInGameCmdHandler<MJ_weihai_Protocol.MahjongChuPaiCmd> {
 
     @Override
     protected void doEasyInvoke(

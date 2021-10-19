@@ -1,27 +1,15 @@
 package org.mj.bizserver.cmdhandler.game.MJ_weihai_;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.MJ_weihai_Protocol;
 import org.mj.bizserver.foundation.BizResultWrapper;
 import org.mj.bizserver.mod.game.MJ_weihai_.MJ_weihai_BizLogic;
 import org.mj.bizserver.mod.game.MJ_weihai_.report.ReporterTeam;
-import org.mj.comm.cmdhandler.ICmdHandler;
 
 /**
  * 麻将杠牌指令处理器
  */
-public final class MahjongGangCmdHandler extends AbstractInGameCmdHandler<MJ_weihai_Protocol.MahjongGangCmd>
-    implements ICmdHandler<MJ_weihai_Protocol.MahjongGangCmd> {
-
-    @Override
-    public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
-        MJ_weihai_Protocol.MahjongGangCmd cmdObj) {
-        // 将复杂工作交给代理, 我只执行省心的调用
-        super.doProxyInvoke(ctx, remoteSessionId, fromUserId, cmdObj);
-    }
+public final class MahjongGangCmdHandler
+    extends AbstractInGameCmdHandler<MJ_weihai_Protocol.MahjongGangCmd> {
 
     @Override
     protected void doEasyInvoke(
