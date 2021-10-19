@@ -3,7 +3,6 @@ package org.mj.proxyserver.cluster;
 import com.alibaba.fastjson.JSONObject;
 import org.mj.bizserver.def.PubSubChannelDef;
 import org.mj.bizserver.def.RedisKeyDef;
-import org.mj.comm.NettyClient;
 import org.mj.comm.pubsub.MySubscriber;
 import org.mj.comm.util.RedisXuite;
 import org.mj.proxyserver.ProxyServer;

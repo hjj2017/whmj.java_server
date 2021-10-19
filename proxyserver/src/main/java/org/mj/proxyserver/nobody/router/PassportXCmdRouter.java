@@ -7,7 +7,6 @@ import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.allmsg.PassportServerProtocol;
 import org.mj.bizserver.def.ServerJobTypeEnum;
 import org.mj.bizserver.foundation.MsgRecognizer;
-import org.mj.comm.NettyClient;
 import org.mj.proxyserver.ProxyServer;
 import org.mj.proxyserver.cluster.NewServerFinder;
 import org.mj.proxyserver.foundation.ClientMsgHandler;

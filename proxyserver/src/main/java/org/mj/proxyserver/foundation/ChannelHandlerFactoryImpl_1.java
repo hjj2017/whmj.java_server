@@ -1,7 +1,6 @@
 package org.mj.proxyserver.foundation;
 
 import io.netty.channel.ChannelHandler;
-import org.mj.comm.NettyServer;
 
 /**
  * 外部客户端信道处理器工厂,

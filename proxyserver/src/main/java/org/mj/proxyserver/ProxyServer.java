@@ -8,7 +8,6 @@ import org.apache.log4j.PropertyConfigurator;
 import org.mj.bizserver.def.PubSubChannelDef;
 import org.mj.bizserver.def.WorkModeDef;
 import org.mj.bizserver.foundation.Ukey;
-import org.mj.comm.NettyServer;
 import org.mj.comm.pubsub.MySubscriber;
 import org.mj.comm.util.RedisXuite;
 import org.mj.proxyserver.cluster.AClubTableChangedListener;

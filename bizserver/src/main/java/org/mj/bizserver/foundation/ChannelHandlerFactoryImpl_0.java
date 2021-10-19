@@ -1,7 +1,6 @@
 package org.mj.bizserver.foundation;
 
 import io.netty.channel.ChannelHandler;
-import org.mj.comm.NettyServer;
 
 /**
  * 内部服务器信道处理器工厂

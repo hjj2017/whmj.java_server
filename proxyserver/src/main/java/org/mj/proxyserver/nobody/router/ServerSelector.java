@@ -1,7 +1,6 @@
 package org.mj.proxyserver.nobody.router;
 
 import org.mj.bizserver.def.ServerJobTypeEnum;
-import org.mj.comm.NettyClient;
 import org.mj.comm.util.OutParam;
 import org.mj.proxyserver.cluster.NewServerFinder;
 import org.slf4j.Logger;

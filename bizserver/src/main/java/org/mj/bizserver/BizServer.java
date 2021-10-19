@@ -16,7 +16,6 @@ import org.mj.bizserver.foundation.AliSMSAuthZervice;
 import org.mj.bizserver.foundation.ChannelHandlerFactoryImpl_0;
 import org.mj.bizserver.foundation.Ukey;
 import org.mj.bizserver.mod.game.MJ_weihai_.MJ_weihai_BizLogic;
-import org.mj.comm.NettyServer;
 import org.mj.comm.pubsub.MySubscriber;
 import org.mj.comm.util.DLock;
 import org.mj.comm.util.MySqlXuite;
