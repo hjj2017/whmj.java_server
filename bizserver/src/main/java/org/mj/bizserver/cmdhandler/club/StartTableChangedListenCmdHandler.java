@@ -1,19 +1,17 @@
 package org.mj.bizserver.cmdhandler.club;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.ClubServerProtocol;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.comm.cmdhandler.ICmdHandler;
 
 /**
  * 开始牌桌变化监听命令处理器
  */
 public class StartTableChangedListenCmdHandler
-    implements ICmdHandler<ClubServerProtocol.StartTableChangedListenCmd> {
+    implements ICmdHandler<MyCmdHandlerContext, ClubServerProtocol.StartTableChangedListenCmd> {
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         ClubServerProtocol.StartTableChangedListenCmd cmdObj) {
     }
 }

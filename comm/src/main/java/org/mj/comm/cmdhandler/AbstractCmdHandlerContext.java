@@ -24,7 +24,7 @@ abstract public class AbstractCmdHandlerContext {
     /**
      * 来自用户 Id
      */
-    private long _fromUserId = -1;
+    private int _fromUserId = -1;
 
     /**
      * 获取代理服务器 Id
@@ -91,7 +91,7 @@ abstract public class AbstractCmdHandlerContext {
      *
      * @return 来自用户 Id
      */
-    public long getFromUserId() {
+    public int getFromUserId() {
         return _fromUserId;
     }
 
@@ -101,7 +101,7 @@ abstract public class AbstractCmdHandlerContext {
      * @param val 来自用户 Id
      * @return this 指针
      */
-    public AbstractCmdHandlerContext setFromUserId(long val) {
+    public AbstractCmdHandlerContext setFromUserId(int val) {
         _fromUserId = val;
         return this;
     }
@@ -113,7 +113,7 @@ abstract public class AbstractCmdHandlerContext {
      * @param errorMsg  错误消息
      * @return 信道预期
      */
-    abstract public ChannelFuture errorAndFlush(int errorCode, String errorMsg);
+    abstract public ChannelFuture sendError(int errorCode, String errorMsg);
 
     /**
      * 写出消息

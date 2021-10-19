@@ -1,9 +1,8 @@
 package org.mj.bizserver.cmdhandler.club;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.ClubServerProtocol;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.club.membercenter.MemberCenterBizLogic;
 import org.mj.bizserver.mod.club.membercenter.bizdata.Player;
 import org.mj.bizserver.mod.club.membercenter.bizdata.Table;
@@ -16,17 +15,13 @@ import java.util.Map;
 /**
  * 获取牌桌列表指令处理器
  */
-public class GetTableListCmdHandler implements ICmdHandler<ClubServerProtocol.GetTableListCmd> {
+public class GetTableListCmdHandler implements ICmdHandler<MyCmdHandlerContext, ClubServerProtocol.GetTableListCmd> {
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         ClubServerProtocol.GetTableListCmd cmdObj) {
 
         if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0 ||
             null == cmdObj) {
             return;
         }
@@ -34,12 +29,12 @@ public class GetTableListCmdHandler implements ICmdHandler<ClubServerProtocol.Ge
         final OutParam<Integer> out_maxNumOfTable = new OutParam<>();
 
         MemberCenterBizLogic.getInstance().getTableList_async(
-            fromUserId,
+            ctx.getFromUserId(),
             cmdObj.getClubId(),
             cmdObj.getPageIndex(),
             out_maxNumOfTable,
             (resultX) -> buildResultMsgAndSend(
-                ctx, remoteSessionId, fromUserId, cmdObj.getClubId(), cmdObj.getPageIndex(), out_maxNumOfTable, resultX
+                ctx, cmdObj.getClubId(), cmdObj.getPageIndex(), out_maxNumOfTable, resultX
             )
         );
     }
@@ -48,17 +43,13 @@ public class GetTableListCmdHandler implements ICmdHandler<ClubServerProtocol.Ge
      * 构建结果消息并发送
      *
      * @param ctx               客户端信道处理器上下文
-     * @param remoteSessionId   远程会话 Id
-     * @param fromUserId        来自用户 Id
      * @param clubId            亲友圈 Id
      * @param pageIndex         页面索引
      * @param out_maxNumOfTable ( 输出参数 ) 最大牌桌数量
      * @param resultX           业务结果
      */
     static private void buildResultMsgAndSend(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         int clubId,
         int pageIndex,
         OutParam<Integer> out_maxNumOfTable,
@@ -68,12 +59,10 @@ public class GetTableListCmdHandler implements ICmdHandler<ClubServerProtocol.Ge
             return;
         }
 
-        final InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-
-        if (0 != newMsg.admitError(resultX)) {
-            ctx.writeAndFlush(newMsg);
+        if (0 != resultX.getErrorCode()) {
+            ctx.sendError(
+                resultX.getErrorCode(), resultX.getErrorMsg()
+            );
             return;
         }
 
@@ -89,11 +78,8 @@ public class GetTableListCmdHandler implements ICmdHandler<ClubServerProtocol.Ge
 
         // 填充所有牌桌
         fillAllTable(b0, tableList);
-
-        ClubServerProtocol.GetTableListResult r = b0.build();
-
-        newMsg.putProtoMsg(r);
-        ctx.writeAndFlush(newMsg);
+        
+        ctx.writeAndFlush(b0.build());
     }
 
     /**

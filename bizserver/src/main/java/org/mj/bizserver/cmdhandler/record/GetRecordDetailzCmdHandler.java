@@ -45,7 +45,7 @@ public class GetRecordDetailzCmdHandler implements ICmdHandler<MyCmdHandlerConte
         }
 
         if (0 != resultX.getErrorCode()) {
-            ctx.errorAndFlush(
+            ctx.sendError(
                 resultX.getErrorCode(), resultX.getErrorMsg()
             );
             return;

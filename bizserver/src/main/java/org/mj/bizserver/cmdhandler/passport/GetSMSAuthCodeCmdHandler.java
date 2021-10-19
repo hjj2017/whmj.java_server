@@ -43,7 +43,7 @@ public class GetSMSAuthCodeCmdHandler implements ICmdHandler<MyCmdHandlerContext
         }
 
         if (0 != resultX.getErrorCode()) {
-            ctx.errorAndFlush(
+            ctx.sendError(
                 resultX.getErrorCode(), resultX.getErrorMsg()
             );
             return;

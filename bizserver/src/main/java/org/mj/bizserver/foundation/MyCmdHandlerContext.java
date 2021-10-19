@@ -21,16 +21,16 @@ public class MyCmdHandlerContext extends AbstractCmdHandlerContext {
     /**
      * 类参数构造器
      *
-     * @param gatewayServerCh 网关服务器信道
+     * @param proxyServerCh 代理服务器信道
      */
-    MyCmdHandlerContext(Channel gatewayServerCh) {
+    MyCmdHandlerContext(Channel proxyServerCh) {
         super();
-        _proxyServerCh = gatewayServerCh;
+        _proxyServerCh = proxyServerCh;
     }
 
     /**
      * 获取 Netty 信道
-     *
+     * <p>
      * return Netty 信道
      */
     public Channel getNettyChannel() {
@@ -38,7 +38,7 @@ public class MyCmdHandlerContext extends AbstractCmdHandlerContext {
     }
 
     @Override
-    public ChannelFuture errorAndFlush(int errorCode, String errorMsg) {
+    public ChannelFuture sendError(int errorCode, String errorMsg) {
         CommProtocol.ErrorHintResult.Builder b = CommProtocol.ErrorHintResult.newBuilder();
         b.setErrorCode(errorCode);
         b.setErrorMsg(Objects.requireNonNullElse(errorMsg, ""));

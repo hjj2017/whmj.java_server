@@ -1,9 +1,8 @@
 package org.mj.bizserver.cmdhandler.club;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.ClubServerProtocol;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.club.membercenter.MemberCenterBizLogic;
 import org.mj.bizserver.mod.club.membercenter.bizdata.ClubDetailz;
 import org.mj.bizserver.mod.club.membercenter.bizdata.FixGameX;
@@ -15,49 +14,42 @@ import java.util.Map;
 /**
  * 获取亲友圈详情指令处理器
  */
-public class GetClubDetailzCmdHandler implements ICmdHandler<ClubServerProtocol.GetClubDetailzCmd> {
+public class GetClubDetailzCmdHandler implements ICmdHandler<MyCmdHandlerContext, ClubServerProtocol.GetClubDetailzCmd> {
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         ClubServerProtocol.GetClubDetailzCmd cmdObj) {
 
         if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0 ||
             null == cmdObj) {
             return;
         }
 
         // 获取亲友圈详情
         MemberCenterBizLogic.getInstance().getClubDetailz_async(
-            fromUserId, cmdObj.getClubId(),
-            (resultX) -> buildResultMsgAndSend(ctx, remoteSessionId, fromUserId, resultX)
+            ctx.getFromUserId(),
+            cmdObj.getClubId(),
+            (resultX) -> buildResultMsgAndSend(ctx, resultX)
         );
     }
 
     /**
      * 构建结果消息并发送
      *
-     * @param ctx             客户端信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param resultX         业务结果
+     * @param ctx     客户端信道处理器上下文
+     * @param resultX 业务结果
      */
     static private void buildResultMsgAndSend(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, BizResultWrapper<ClubDetailz> resultX) {
+        MyCmdHandlerContext ctx, BizResultWrapper<ClubDetailz> resultX) {
         if (null == ctx ||
             null == resultX) {
             return;
         }
 
-        final InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-
-        if (0 != newMsg.admitError(resultX)) {
-            ctx.writeAndFlush(newMsg);
+        if (0 != resultX.getErrorCode()) {
+            ctx.sendError(
+                resultX.getErrorCode(), resultX.getErrorMsg()
+            );
             return;
         }
 
@@ -65,7 +57,6 @@ public class GetClubDetailzCmdHandler implements ICmdHandler<ClubServerProtocol.
         ClubDetailz clubDetailz = resultX.getFinalResult();
 
         if (null == clubDetailz) {
-            newMsg.free();
             return;
         }
 
@@ -86,9 +77,7 @@ public class GetClubDetailzCmdHandler implements ICmdHandler<ClubServerProtocol.
         // 填充固定玩法列表
         fillFixGameXList(b0, clubDetailz);
 
-        ClubServerProtocol.GetClubDetailzResult r = b0.build();
-        newMsg.putProtoMsg(r);
-        ctx.writeAndFlush(newMsg);
+        ctx.writeAndFlush(b0.build());
     }
 
     /**

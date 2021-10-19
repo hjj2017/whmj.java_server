@@ -51,7 +51,7 @@ public final class JoinRoomCmdHandler implements ICmdHandler<MyCmdHandlerContext
             ctx.getFromUserId(), roomId
         );
 
-        ctx.errorAndFlush(
+        ctx.sendError(
             ErrorEnum.GAME__ROOM_NOT_EXIST.getErrorCode(),
             ErrorEnum.GAME__ROOM_NOT_EXIST.getErrorMsg()
         );

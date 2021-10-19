@@ -55,7 +55,7 @@ public class UserLoginCmdHandler implements ICmdHandler<MyCmdHandlerContext, Pas
 
         if (0 != resultX.getErrorCode()) {
             // 写出错误消息
-            ctx.errorAndFlush(
+            ctx.sendError(
                 resultX.getErrorCode(), resultX.getErrorMsg()
             );
             return;

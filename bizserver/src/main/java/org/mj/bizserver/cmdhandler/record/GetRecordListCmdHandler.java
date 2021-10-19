@@ -73,7 +73,7 @@ public class GetRecordListCmdHandler implements ICmdHandler<MyCmdHandlerContext,
         BizResultWrapper<List<RecordSummary>> resultX) {
 
         if (0 != resultX.getErrorCode()) {
-            ctx.errorAndFlush(
+            ctx.sendError(
                 resultX.getErrorCode(), resultX.getErrorMsg()
             );
             return;

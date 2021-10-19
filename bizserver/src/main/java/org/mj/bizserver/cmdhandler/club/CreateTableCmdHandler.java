@@ -1,11 +1,10 @@
 package org.mj.bizserver.cmdhandler.club;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.ClubServerProtocol;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.def.GameType0Enum;
 import org.mj.bizserver.def.GameType1Enum;
 import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.game.MJ_weihai_.MJ_weihai_BizLogic;
 import org.mj.comm.cmdhandler.ICmdHandler;
 import org.slf4j.Logger;
@@ -23,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 虽然看上去还是亲友圈的代码,
  * 但真正的运行进程是在游戏服务器上!
  */
-public class CreateTableCmdHandler implements ICmdHandler<ClubServerProtocol.CreateTableCmd> {
+public class CreateTableCmdHandler implements ICmdHandler<MyCmdHandlerContext, ClubServerProtocol.CreateTableCmd> {
     /**
      * 日志对象
      */
@@ -31,13 +30,9 @@ public class CreateTableCmdHandler implements ICmdHandler<ClubServerProtocol.Cre
 
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         ClubServerProtocol.CreateTableCmd cmdObj) {
         if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0 ||
             null == cmdObj) {
             return;
         }
@@ -47,11 +42,9 @@ public class CreateTableCmdHandler implements ICmdHandler<ClubServerProtocol.Cre
         for (int i = 0; i < cmdObj.getRuleItemCount(); i++) {
             ClubServerProtocol.KeyAndVal ruleItem = cmdObj.getRuleItem(i);
 
-            if (null != ruleItem) {
-                ruleMap.putIfAbsent(
-                    ruleItem.getKey(), ruleItem.getVal()
-                );
-            }
+            ruleMap.putIfAbsent(
+                ruleItem.getKey(), ruleItem.getVal()
+            );
         }
 
         // 获取游戏类型 0 和游戏类型 1
@@ -62,17 +55,17 @@ public class CreateTableCmdHandler implements ICmdHandler<ClubServerProtocol.Cre
             GameType1Enum.MJ_weihai_ == gameType1) {
             // 威海麻将
             MJ_weihai_BizLogic.getInstance().createRoom_async(
-                fromUserId,
+                ctx.getFromUserId(),
                 cmdObj.getClubId(),
                 cmdObj.getSeqNum(),
                 cmdObj.getUsingFixGameX(),
                 ruleMap,
-                (resultX) -> buildResultMsgAndSend(ctx, remoteSessionId, fromUserId, resultX)
+                (resultX) -> buildResultMsgAndSend(ctx, resultX)
             );
         } else {
             LOGGER.error(
                 "未知游戏类型, userId = {}, gameType0 = {}, gameType1 = {}",
-                fromUserId,
+                ctx.getFromUserId(),
                 cmdObj.getGameType0(),
                 cmdObj.getGameType1()
             );
@@ -82,24 +75,20 @@ public class CreateTableCmdHandler implements ICmdHandler<ClubServerProtocol.Cre
     /**
      * 构建消息并发送
      *
-     * @param ctx             客户端信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param resultX         业务结果
+     * @param ctx     客户端信道处理器上下文
+     * @param resultX 业务结果
      */
     static private void buildResultMsgAndSend(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, BizResultWrapper<Integer> resultX) {
+        MyCmdHandlerContext ctx, BizResultWrapper<Integer> resultX) {
         if (null == ctx ||
             null == resultX) {
             return;
         }
 
-        InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-
-        if (0 != newMsg.admitError(resultX)) {
-            ctx.writeAndFlush(newMsg);
+        if (0 != resultX.getErrorCode()) {
+            ctx.sendError(
+                resultX.getErrorCode(), resultX.getErrorMsg()
+            );
             return;
         }
 
@@ -111,7 +100,6 @@ public class CreateTableCmdHandler implements ICmdHandler<ClubServerProtocol.Cre
 
         ClubServerProtocol.CreateTableResult r = b.build();
 
-        newMsg.putProtoMsg(r);
-        ctx.writeAndFlush(newMsg);
+        ctx.writeAndFlush(r);
     }
 }

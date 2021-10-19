@@ -1,11 +1,10 @@
 package org.mj.bizserver.cmdhandler.club;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.ClubServerProtocol;
 import org.mj.bizserver.allmsg.HallServerProtocol;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.def.RedisKeyDef;
 import org.mj.bizserver.foundation.AsyncOperationProcessorSingleton;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.game.MJ_weihai_.MJ_weihai_BizLogic;
 import org.mj.comm.cmdhandler.ICmdHandler;
 import org.mj.comm.util.RedisXuite;
@@ -22,7 +21,7 @@ import redis.clients.jedis.Jedis;
  * 虽然看上去还是亲友圈的代码,
  * 但真正的运行进程是在游戏服务器上!
  */
-public class JoinTableCmdHandler implements ICmdHandler<ClubServerProtocol.JoinTableCmd> {
+public class JoinTableCmdHandler implements ICmdHandler<MyCmdHandlerContext, ClubServerProtocol.JoinTableCmd> {
     /**
      * 日志对象
      */
@@ -30,14 +29,10 @@ public class JoinTableCmdHandler implements ICmdHandler<ClubServerProtocol.JoinT
 
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         ClubServerProtocol.JoinTableCmd cmdObj) {
 
         if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0 ||
             null == cmdObj) {
             return;
         }
@@ -47,19 +42,18 @@ public class JoinTableCmdHandler implements ICmdHandler<ClubServerProtocol.JoinT
 
         if (MJ_weihai_BizLogic.getInstance().hasRoom(roomId)) {
             // 威海麻将加入房间
-            JoinTableCmdHandler_MJ_weihai_.handle(ctx, remoteSessionId, fromUserId, cmdObj);
+            JoinTableCmdHandler_MJ_weihai_.handle(
+                ctx, cmdObj
+            );
             return;
         }
 
         LOGGER.error(
             "无法加入的房间 Id, userId = {}, roomId = {}",
-            fromUserId, roomId
+            ctx.getFromUserId(), roomId
         );
 
-        final InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-        newMsg.putProtoMsg(
+        ctx.writeAndFlush(
             HallServerProtocol.JoinRoomResult.newBuilder()
                 .setRoomId(-1)
                 .setGameType0(-1)
@@ -67,16 +61,14 @@ public class JoinTableCmdHandler implements ICmdHandler<ClubServerProtocol.JoinT
                 .build()
         );
 
-        ctx.writeAndFlush(newMsg);
-
         // （ 异步方式 ） 清理用户所在房间
-        clearUserAtRoom_async(fromUserId, roomId);
+        clearUserAtRoom_async(ctx.getFromUserId(), roomId);
     }
 
     /**
      * （ 异步方式 ） 清理用户所在房间
      *
-     * @param userId 用户 Id
+     * @param userId   用户 Id
      * @param atRoomId 所在房间 Id
      */
     static private void clearUserAtRoom_async(int userId, int atRoomId) {

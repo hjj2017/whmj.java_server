@@ -1,11 +1,10 @@
 package org.mj.bizserver.cmdhandler.club;
 
-import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.ClubServerProtocol;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.def.GameType0Enum;
 import org.mj.bizserver.def.GameType1Enum;
 import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.club.adminctrl.AdminCtrlBizLogic;
 import org.mj.bizserver.mod.club.membercenter.bizdata.FixGameX;
 import org.mj.comm.cmdhandler.ICmdHandler;
@@ -17,12 +16,10 @@ import java.util.Map;
 /**
  * 修改固定玩法指令处理器
  */
-public class ModifyFixGameXCmdHandler implements ICmdHandler<ClubServerProtocol.ModifyFixGameCmd> {
+public class ModifyFixGameXCmdHandler implements ICmdHandler<MyCmdHandlerContext, ClubServerProtocol.ModifyFixGameCmd> {
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         ClubServerProtocol.ModifyFixGameCmd cmdObj) {
 
         final GameType0Enum gameType0 = GameType0Enum.valueOf(cmdObj.getGameType0());
@@ -36,8 +33,7 @@ public class ModifyFixGameXCmdHandler implements ICmdHandler<ClubServerProtocol.
         // 获取规则条目列表
         List<ClubServerProtocol.KeyAndVal> ruleItemList = cmdObj.getRuleItemList();
 
-        if (null != ruleItemList &&
-            !ruleItemList.isEmpty()) {
+        if (!ruleItemList.isEmpty()) {
             Map<Integer, Integer> ruleMap = new HashMap<>();
 
             for (ClubServerProtocol.KeyAndVal keyAndVal : ruleItemList) {
@@ -51,9 +47,11 @@ public class ModifyFixGameXCmdHandler implements ICmdHandler<ClubServerProtocol.
         }
 
         AdminCtrlBizLogic.getInstance().modifyFixGameX_async(
-            fromUserId, cmdObj.getClubId(), fixGameX,
+            ctx.getFromUserId(),
+            cmdObj.getClubId(),
+            fixGameX,
             (resultX) -> buildResultMsgAndSend(
-                ctx, remoteSessionId, fromUserId, cmdObj.getClubId(), fixGameX, resultX
+                ctx, cmdObj.getClubId(), fixGameX, resultX
             )
         );
     }
@@ -61,15 +59,13 @@ public class ModifyFixGameXCmdHandler implements ICmdHandler<ClubServerProtocol.
     /**
      * 构建结果消息并发送
      *
-     * @param ctx             客户端信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param clubId          亲友圈 Id
-     * @param fixGameX        固定玩法
-     * @param resultX         业务结果
+     * @param ctx      客户端信道处理器上下文
+     * @param clubId   亲友圈 Id
+     * @param fixGameX 固定玩法
+     * @param resultX  业务结果
      */
     static private void buildResultMsgAndSend(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, int clubId, final FixGameX fixGameX,
+        MyCmdHandlerContext ctx, int clubId, final FixGameX fixGameX,
         BizResultWrapper<Boolean> resultX) {
         if (null == ctx ||
             null == fixGameX ||
@@ -77,12 +73,10 @@ public class ModifyFixGameXCmdHandler implements ICmdHandler<ClubServerProtocol.
             return;
         }
 
-        final InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-
-        if (0 != newMsg.admitError(resultX)) {
-            ctx.writeAndFlush(newMsg);
+        if (0 != resultX.getErrorCode()) {
+            ctx.sendError(
+                resultX.getErrorCode(), resultX.getErrorMsg()
+            );
             return;
         }
 
@@ -92,7 +86,6 @@ public class ModifyFixGameXCmdHandler implements ICmdHandler<ClubServerProtocol.
             .setSuccezz(resultX.getFinalResult())
             .build();
 
-        newMsg.putProtoMsg(r);
-        ctx.writeAndFlush(newMsg);
+        ctx.writeAndFlush(r);
     }
 }

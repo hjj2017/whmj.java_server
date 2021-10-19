@@ -2,7 +2,6 @@ package org.mj.bizserver.allmsg;
 
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.Message;
-import org.mj.bizserver.foundation.BizResultWrapper;
 import org.mj.bizserver.foundation.MsgRecognizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,28 +163,6 @@ public final class InternalServerMsg {
     public InternalServerMsg setMsgBody(byte[] val) {
         _msgBody = val;
         return this;
-    }
-
-    /**
-     * 承认错误
-     *
-     * @param resultX 业务结果
-     * @return 0 = 没有错误, 否则返回错误编号
-     */
-    public int admitError(BizResultWrapper<?> resultX) {
-        if (null == resultX ||
-            0 == resultX.getErrorCode()) {
-            return 0;
-        }
-
-        CommProtocol.ErrorHintResult.Builder b = CommProtocol.ErrorHintResult.newBuilder();
-        b.setErrorCode(resultX.getErrorCode());
-        b.setErrorMsg(resultX.getErrorMsg());
-        CommProtocol.ErrorHintResult r = b.build();
-
-        putProtoMsg(r);
-
-        return resultX.getErrorCode();
     }
 
     /**
