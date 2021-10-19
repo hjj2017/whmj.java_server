@@ -2,6 +2,7 @@ package org.mj.bizserver.cmdhandler.game.MJ_weihai_;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.MJ_weihai_Protocol;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Player;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Room;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.RoomGroup;
@@ -12,7 +13,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 上报地理位置指令处理器
  */
-public class ReportGeoLocationCmdHandler implements ICmdHandler<MJ_weihai_Protocol.ReportGeoLocationCmd> {
+public class ReportGeoLocationCmdHandler implements ICmdHandler<MyCmdHandlerContext, MJ_weihai_Protocol.ReportGeoLocationCmd> {
     /**
      * 日志对象
      */
@@ -20,20 +21,16 @@ public class ReportGeoLocationCmdHandler implements ICmdHandler<MJ_weihai_Protoc
 
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         MJ_weihai_Protocol.ReportGeoLocationCmd cmdObj) {
 
         if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0 ||
             null == cmdObj) {
             return;
         }
 
         // 获取当前房间
-        final Room currRoom = RoomGroup.getByUserId(fromUserId);
+        final Room currRoom = RoomGroup.getByUserId(ctx.getFromUserId());
 
         if (null == currRoom) {
             return;
@@ -41,7 +38,7 @@ public class ReportGeoLocationCmdHandler implements ICmdHandler<MJ_weihai_Protoc
 
         // 获取当前玩家
         final Player currPlayer = currRoom.getPlayerByUserId(
-            fromUserId
+            ctx.getFromUserId()
         );
 
         if (null == currPlayer) {
@@ -50,7 +47,7 @@ public class ReportGeoLocationCmdHandler implements ICmdHandler<MJ_weihai_Protoc
 
         LOGGER.info(
             "上报地理位置, userId = {}, atRoomId = {}, 经度 = {}, 纬度 = {}, 海拔 = {}, ipAddr = {}",
-            fromUserId,
+            ctx.getFromUserId(),
             currRoom.getRoomId(),
             cmdObj.getLongitude(),
             cmdObj.getLatitude(),

@@ -1,8 +1,8 @@
 package org.mj.bizserver.cmdhandler.game.MJ_weihai_;
 
 import com.google.protobuf.GeneratedMessageV3;
-import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.MJ_weihai_Protocol;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.game.MJ_weihai_.MJ_weihai_BizLogic;
 import org.mj.bizserver.mod.game.MJ_weihai_.RoomOverDetermine;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.DissolveRoomSession;
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 解散投票指令处理器
  */
-public class DissolutionVoteCmdHandler implements ICmdHandler<MJ_weihai_Protocol.DissolutionVoteCmd> {
+public class DissolutionVoteCmdHandler implements ICmdHandler<MyCmdHandlerContext, MJ_weihai_Protocol.DissolutionVoteCmd> {
     /**
      * 日志对象
      */
@@ -24,17 +24,15 @@ public class DissolutionVoteCmdHandler implements ICmdHandler<MJ_weihai_Protocol
 
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         MJ_weihai_Protocol.DissolutionVoteCmd cmdObj) {
 
         if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0 ||
             null == cmdObj) {
             return;
         }
+
+        int fromUserId = ctx.getFromUserId();
 
         // 获取当前房间
         final Room currRoom = RoomGroup.getByUserId(fromUserId);

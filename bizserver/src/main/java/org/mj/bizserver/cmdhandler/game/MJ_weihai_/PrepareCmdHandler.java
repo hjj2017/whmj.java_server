@@ -1,9 +1,8 @@
 package org.mj.bizserver.cmdhandler.game.MJ_weihai_;
 
-import io.netty.channel.ChannelHandlerContext;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.allmsg.MJ_weihai_Protocol;
 import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.game.MJ_weihai_.MJ_weihai_BizLogic;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Room;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.RoomGroup;
@@ -14,19 +13,17 @@ import org.mj.comm.cmdhandler.ICmdHandler;
 /**
  * 准备命令处理器
  */
-public final class PrepareCmdHandler implements ICmdHandler<MJ_weihai_Protocol.PrepareCmd> {
+public final class PrepareCmdHandler implements ICmdHandler<MyCmdHandlerContext, MJ_weihai_Protocol.PrepareCmd> {
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         MJ_weihai_Protocol.PrepareCmd cmdObj) {
 
         // 业务结果
         final BizResultWrapper<ReporterTeam> resultX = new BizResultWrapper<>();
 
         MJ_weihai_BizLogic.getInstance().prepare(
-            fromUserId,
+            ctx.getFromUserId(),
             cmdObj.getYes(),
             resultX
         );
@@ -34,7 +31,7 @@ public final class PrepareCmdHandler implements ICmdHandler<MJ_weihai_Protocol.P
         // 收集回放词条列表
         collectPlaybackWordzList(resultX);
         // 构建消息并发送
-        buildMsgAndSend(ctx, remoteSessionId, fromUserId, resultX);
+        buildMsgAndSend(ctx, resultX);
     }
 
     /**
@@ -72,15 +69,11 @@ public final class PrepareCmdHandler implements ICmdHandler<MJ_weihai_Protocol.P
     /**
      * 构建消息并发送
      *
-     * @param ctx             客户端信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param resultX         业务结果
+     * @param ctx     客户端信道处理器上下文
+     * @param resultX 业务结果
      */
     static private void buildMsgAndSend(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         BizResultWrapper<ReporterTeam> resultX) {
 
         if (null == ctx ||
@@ -89,12 +82,9 @@ public final class PrepareCmdHandler implements ICmdHandler<MJ_weihai_Protocol.P
         }
 
         if (0 != resultX.getErrorCode()) {
-            InternalServerMsg newMsg = new InternalServerMsg();
-            newMsg.setRemoteSessionId(remoteSessionId);
-            newMsg.setFromUserId(fromUserId);
-            newMsg.admitError(resultX);
-
-            ctx.writeAndFlush(newMsg);
+            ctx.sendError(
+                resultX.getErrorCode(), resultX.getErrorMsg()
+            );
             return;
         }
 

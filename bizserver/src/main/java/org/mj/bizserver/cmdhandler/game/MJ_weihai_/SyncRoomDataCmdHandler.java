@@ -1,8 +1,7 @@
 package org.mj.bizserver.cmdhandler.game.MJ_weihai_;
 
-import io.netty.channel.ChannelHandlerContext;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.allmsg.MJ_weihai_Protocol;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.game.MJ_weihai_.RoomOverDetermine;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.ChiChoiceQuestion;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.ChiPengGangHuSession;
@@ -27,7 +26,7 @@ import java.util.Objects;
 /**
  * 同步房间数据指令处理器
  */
-public final class SyncRoomDataCmdHandler implements ICmdHandler<MJ_weihai_Protocol.SyncRoomDataCmd> {
+public final class SyncRoomDataCmdHandler implements ICmdHandler<MyCmdHandlerContext, MJ_weihai_Protocol.SyncRoomDataCmd> {
     /**
      * 日志对象
      */
@@ -35,9 +34,7 @@ public final class SyncRoomDataCmdHandler implements ICmdHandler<MJ_weihai_Proto
 
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         MJ_weihai_Protocol.SyncRoomDataCmd cmdObj) {
 
         if (null == ctx ||
@@ -46,25 +43,25 @@ public final class SyncRoomDataCmdHandler implements ICmdHandler<MJ_weihai_Proto
         }
 
         // 获取当前房间
-        Room currRoom = RoomGroup.getByUserId(fromUserId);
+        Room currRoom = RoomGroup.getByUserId(ctx.getFromUserId());
 
         if (null == currRoom ||
             RoomOverDetermine.determine(currRoom) ||
             currRoom.isForcedEnd()) {
             LOGGER.error(
                 "用户所在房间为空或者已经结束, userId = {}",
-                fromUserId
+                ctx.getFromUserId()
             );
             return;
         }
 
         // 获取执行玩家
-        Player execPlayer = currRoom.getPlayerByUserId(fromUserId);
+        Player execPlayer = currRoom.getPlayerByUserId(ctx.getFromUserId());
 
         if (null == execPlayer) {
             LOGGER.error(
                 "玩家不在房间中, userId = {}, atRoomId = {}",
-                fromUserId,
+                ctx.getFromUserId(),
                 currRoom.getRoomId()
             );
             return;
@@ -78,34 +75,28 @@ public final class SyncRoomDataCmdHandler implements ICmdHandler<MJ_weihai_Proto
         // 填充当前牌局
         fillCurrRound(b, currRoom);
         // 填充所有玩家
-        fillAllPlayer(b, currRoom, fromUserId);
+        fillAllPlayer(b, currRoom, ctx.getFromUserId());
 
-        MJ_weihai_Protocol.SyncRoomDataResult r = b.build();
-
-        final InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-
-        // 附着消息并发送
-        newMsg.putProtoMsg(r);
-        ctx.writeAndFlush(newMsg);
+        ctx.writeAndFlush(b.build());
 
         // 添加到广播器
-        GameBroadcaster.add(ctx, remoteSessionId, fromUserId);
+        GameBroadcaster.add(
+            ctx.getNettyChannel(), ctx.getRemoteSessionId(), ctx.getFromUserId()
+        );
 
         // 单独发送选飘提示广播
         sendSelectPiaoHintBroadcast(
-            ctx, remoteSessionId, fromUserId, currRoom
+            ctx, currRoom
         );
 
         // 单独发送亮杠腚广播
         sendLiangGangDingBroadcast(
-            ctx, remoteSessionId, fromUserId, currRoom
+            ctx, currRoom
         );
 
         // 发送吃碰杠胡操作提示
         sendChiPengGangHuOpHintResult(
-            ctx, remoteSessionId, fromUserId, currRoom
+            ctx, currRoom
         );
 
         // 构建并发送房间解散消息,
@@ -362,16 +353,12 @@ public final class SyncRoomDataCmdHandler implements ICmdHandler<MJ_weihai_Proto
     /**
      * 给用户单独发送选飘提示广播
      *
-     * @param ctx             信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param currRoom        当前房间
+     * @param ctx      信道处理器上下文
+     * @param currRoom 当前房间
      */
     static private void sendSelectPiaoHintBroadcast(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, Room currRoom) {
+        MyCmdHandlerContext ctx, Room currRoom) {
         if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0 ||
             null == currRoom) {
             return;
         }
@@ -397,7 +384,7 @@ public final class SyncRoomDataCmdHandler implements ICmdHandler<MJ_weihai_Proto
         }
 
         // 获取当前玩家
-        Player currPlayer = currRoom.getPlayerByUserId(fromUserId);
+        Player currPlayer = currRoom.getPlayerByUserId(ctx.getFromUserId());
 
         if (null == currPlayer) {
             return;
@@ -415,27 +402,19 @@ public final class SyncRoomDataCmdHandler implements ICmdHandler<MJ_weihai_Proto
             .setPiao3(true)
             .build();
 
-        InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-        newMsg.putProtoMsg(msgObj);
-
-        ctx.writeAndFlush(newMsg);
+        ctx.writeAndFlush(msgObj);
     }
 
     /**
      * 单独发送亮杠腚广播
      *
-     * @param ctx             信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param currRoom        当前房间
+     * @param ctx      信道处理器上下文
+     * @param currRoom 当前房间
      */
     static private void sendLiangGangDingBroadcast(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, Room currRoom) {
+        MyCmdHandlerContext ctx,
+        Room currRoom) {
         if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0 ||
             null == currRoom) {
             return;
         }
@@ -461,27 +440,19 @@ public final class SyncRoomDataCmdHandler implements ICmdHandler<MJ_weihai_Proto
             .setT1(t1IntVal)
             .build();
 
-        InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-        newMsg.putProtoMsg(msgObj);
-
-        ctx.writeAndFlush(newMsg);
+        ctx.writeAndFlush(msgObj);
     }
 
     /**
      * 发送吃碰杠胡操作提示
      *
-     * @param ctx             信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param currRoom        当前房间
+     * @param ctx      信道处理器上下文
+     * @param currRoom 当前房间
      */
     static private void sendChiPengGangHuOpHintResult(
-        ChannelHandlerContext ctx, int remoteSessionId, int fromUserId, Room currRoom) {
+        MyCmdHandlerContext ctx,
+        Room currRoom) {
         if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0 ||
             null == currRoom) {
             return;
         }
@@ -504,9 +475,11 @@ public final class SyncRoomDataCmdHandler implements ICmdHandler<MJ_weihai_Proto
         final ChiPengGangHuSession.Dialog currDialog = sessionObj.getCurrDialog();
 
         if (null == currDialog ||
-            !currDialog.isCurrActUserId(fromUserId)) {
+            !currDialog.isCurrActUserId(ctx.getFromUserId())) {
             return;
         }
+
+        int fromUserId = ctx.getFromUserId();
 
         boolean canChi = currDialog.isUserIdCanChi(fromUserId);
         boolean canPeng = currDialog.isUserIdCanPeng(fromUserId);
@@ -574,13 +547,6 @@ public final class SyncRoomDataCmdHandler implements ICmdHandler<MJ_weihai_Proto
             canBuFeng
         );
 
-        MJ_weihai_Protocol.MahjongChiPengGangHuOpHintResult r = b0.build();
-
-        InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-        newMsg.putProtoMsg(r);
-
-        ctx.writeAndFlush(newMsg);
+        ctx.writeAndFlush(b0.build());
     }
 }

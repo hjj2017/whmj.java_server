@@ -1,9 +1,8 @@
 package org.mj.bizserver.cmdhandler.game.MJ_weihai_;
 
-import io.netty.channel.ChannelHandlerContext;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.allmsg.MJ_weihai_Protocol;
 import org.mj.bizserver.foundation.AliIpv4LocationZervice;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Player;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Room;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.RoomGroup;
@@ -20,7 +19,7 @@ import java.util.function.Function;
 /**
  * 测量地理距离指令处理器
  */
-public class MeasureGeoDistanceCmdHandler implements ICmdHandler<MJ_weihai_Protocol.MeasureGeoDistanceCmd> {
+public class MeasureGeoDistanceCmdHandler implements ICmdHandler<MyCmdHandlerContext, MJ_weihai_Protocol.MeasureGeoDistanceCmd> {
     /**
      * 日志对象
      */
@@ -33,20 +32,16 @@ public class MeasureGeoDistanceCmdHandler implements ICmdHandler<MJ_weihai_Proto
 
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         MJ_weihai_Protocol.MeasureGeoDistanceCmd cmdObj) {
 
         if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0 ||
             null == cmdObj) {
             return;
         }
 
         // 获取当前房间
-        final Room currRoom = RoomGroup.getByUserId(fromUserId);
+        final Room currRoom = RoomGroup.getByUserId(ctx.getFromUserId());
 
         if (null == currRoom) {
             return;
@@ -54,7 +49,7 @@ public class MeasureGeoDistanceCmdHandler implements ICmdHandler<MJ_weihai_Proto
 
         // 尝试修复地理位置, 之后构建消息并发送...
         tryFixGeoLocation(currRoom, (dummy) -> {
-            buildMsgAndSend(ctx, remoteSessionId, fromUserId, currRoom);
+            buildMsgAndSend(ctx, currRoom);
             return null;
         });
     }
@@ -173,17 +168,13 @@ public class MeasureGeoDistanceCmdHandler implements ICmdHandler<MJ_weihai_Proto
     /**
      * 构建消息并发送
      *
-     * @param ctx             客户端信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param currRoom        当前房间
+     * @param ctx      客户端信道处理器上下文
+     * @param currRoom 当前房间
      */
     static private void buildMsgAndSend(
-        final ChannelHandlerContext ctx, final int remoteSessionId, final int fromUserId, final Room currRoom) {
+        final MyCmdHandlerContext ctx, final Room currRoom) {
 
         if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0 ||
             null == currRoom) {
             return;
         }
@@ -225,13 +216,7 @@ public class MeasureGeoDistanceCmdHandler implements ICmdHandler<MJ_weihai_Proto
             }
         }
 
-        InternalServerMsg newMsg = new InternalServerMsg();
-        newMsg.setRemoteSessionId(remoteSessionId);
-        newMsg.setFromUserId(fromUserId);
-
-        MJ_weihai_Protocol.MeasureGeoDistanceResult r = b0.build();
-        newMsg.putProtoMsg(r);
-        ctx.writeAndFlush(newMsg);
+        ctx.writeAndFlush(b0.build());
     }
 
     /**

@@ -1,9 +1,8 @@
 package org.mj.bizserver.cmdhandler.game.MJ_weihai_;
 
-import io.netty.channel.ChannelHandlerContext;
-import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.allmsg.MJ_weihai_Protocol;
 import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.foundation.MyCmdHandlerContext;
 import org.mj.bizserver.mod.game.MJ_weihai_.MJ_weihai_BizLogic;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Room;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.RoomGroup;
@@ -14,7 +13,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 踢出一个玩家指令处理器
  */
-public class FireAPlayerCmdHandler implements ICmdHandler<MJ_weihai_Protocol.FireAPlayerCmd> {
+public class FireAPlayerCmdHandler implements ICmdHandler<MyCmdHandlerContext, MJ_weihai_Protocol.FireAPlayerCmd> {
     /**
      * 日志对象
      */
@@ -22,63 +21,51 @@ public class FireAPlayerCmdHandler implements ICmdHandler<MJ_weihai_Protocol.Fir
 
     @Override
     public void handle(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         MJ_weihai_Protocol.FireAPlayerCmd cmdObj) {
 
         if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0 ||
             null == cmdObj) {
             return;
         }
 
         MJ_weihai_BizLogic.getInstance().fireAPlayer_async(
-            fromUserId,
+            ctx.getFromUserId(),
             cmdObj.getTargetUserId(),
-            (resultX) -> buildMsgAndSend(ctx, remoteSessionId, fromUserId, cmdObj.getTargetUserId(), resultX)
+            (resultX) -> buildMsgAndSend(ctx, cmdObj.getTargetUserId(), resultX)
         );
     }
 
     /**
      * 构建消息并发送
      *
-     * @param ctx             客户端信道处理器上下文
-     * @param remoteSessionId 远程会话 Id
-     * @param fromUserId      来自用户 Id
-     * @param resultX         业务结果
+     * @param ctx          客户端信道处理器上下文
+     * @param targetUserId 目标用户 Id
+     * @param resultX      业务结果
      */
     static private void buildMsgAndSend(
-        ChannelHandlerContext ctx,
-        int remoteSessionId,
-        int fromUserId,
+        MyCmdHandlerContext ctx,
         int targetUserId,
         BizResultWrapper<Boolean> resultX) {
 
         if (null == ctx ||
-            remoteSessionId <= 0 ||
-            fromUserId <= 0 ||
             null == resultX) {
             return;
         }
 
         if (0 != resultX.getErrorCode()) {
-            InternalServerMsg newMsg = new InternalServerMsg();
-            newMsg.setRemoteSessionId(remoteSessionId);
-            newMsg.setFromUserId(fromUserId);
-            newMsg.admitError(resultX);
-
-            ctx.writeAndFlush(newMsg);
+            ctx.sendError(
+                resultX.getErrorCode(), resultX.getErrorMsg()
+            );
             return;
         }
 
-        Room currRoom = RoomGroup.getByUserId(fromUserId);
+        Room currRoom = RoomGroup.getByUserId(ctx.getFromUserId());
 
         if (null == currRoom) {
             LOGGER.error(
                 "房间为空, fromUserId = {}",
-                fromUserId
+                ctx.getFromUserId()
             );
             return;
         }
