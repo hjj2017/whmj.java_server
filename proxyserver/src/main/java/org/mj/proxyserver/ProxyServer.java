@@ -35,7 +35,7 @@ public final class ProxyServer {
     /**
      * 服务器 Id
      */
-    static private int _Id;
+    static private String _Id;
 
     /**
      * 私有化类默认构造器
@@ -48,7 +48,7 @@ public final class ProxyServer {
      *
      * @return 服务器 Id
      */
-    static public int getId() {
+    static public String getId() {
         return _Id;
     }
 
@@ -70,7 +70,7 @@ public final class ProxyServer {
         }
 
         // 设置服务器 Id
-        _Id = Integer.parseInt(cmdLn.getOptionValue("server_id"));
+        _Id = cmdLn.getOptionValue("server_id");
 
         LOGGER.info(
             "服务器版本号 ( ver ) = {}, 当前工作模式 ( workMode ) = {}",

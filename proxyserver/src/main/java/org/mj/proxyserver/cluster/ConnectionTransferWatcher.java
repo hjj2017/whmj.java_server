@@ -28,14 +28,13 @@ public class ConnectionTransferWatcher implements MySubscriber.IMsgHandler {
     public void handle(String ch, String strMsg) {
         if (!PubSubChannelDef.CONNECTION_TRANSFER_NOTICE.equals(ch) ||
             null == strMsg ||
-            strMsg.isEmpty() ||
             !strMsg.startsWith("{")) {
             return;
         }
 
         JSONObject joMsg = JSON.parseObject(strMsg);
 
-        if (joMsg.getIntValue("newProxyServerId") == ProxyServer.getId()) {
+        if (ProxyServer.getId().equals(joMsg.getString("newProxyServerId"))) {
             // 如果重新连接到当前服务器,
             // 则不做任何处理...
             return;

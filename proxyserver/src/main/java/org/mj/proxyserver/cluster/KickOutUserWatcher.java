@@ -31,7 +31,7 @@ public class KickOutUserWatcher implements MySubscriber.IMsgHandler {
 
         JSONObject joNotice = JSONObject.parseObject(strMsg);
 
-        if (ProxyServer.getId() == joNotice.getIntValue("fromServerId")) {
+        if (ProxyServer.getId().equals(joNotice.getString("fromServerId"))) {
             // 如果是本服务器发出的通知,
             return;
         }

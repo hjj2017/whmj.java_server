@@ -1,11 +1,10 @@
 package org.mj.proxyserver.foundation;
 
 import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPipeline;
 import org.mj.bizserver.allmsg.CommProtocol;
 import org.mj.bizserver.allmsg.InternalServerMsg;
+import org.mj.bizserver.foundation.InternalServerMsgCodec;
 import org.mj.comm.util.MyTimer;
 import org.mj.proxyserver.ProxyServer;
 import org.slf4j.Logger;
@@ -47,23 +46,12 @@ public class InternalMsgHandler extends ChannelDuplexHandler {
             return;
         }
 
-        ChannelHandler[] hArray = {
-            new InternalMsgDecoder(),
-            new InternalMsgEncoder(),
-        };
-
-        // 获取信道管线
-        ChannelPipeline pl = ctx.pipeline();
-
-        for (ChannelHandler h : hArray) {
-            // 获取处理器类
-            Class<? extends ChannelHandler>
-                hClazz = h.getClass();
-
-            if (null == pl.get(hClazz)) {
-                pl.addBefore(ctx.name(), hClazz.getSimpleName(), h);
-            }
-        }
+        // 添加编解码器
+        ctx.pipeline().addBefore(
+            ctx.name(),
+            InternalServerMsgCodec.class.getName(),
+            new InternalServerMsgCodec()
+        );
     }
 
     @Override
