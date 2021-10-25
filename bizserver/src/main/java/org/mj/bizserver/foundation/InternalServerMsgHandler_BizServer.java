@@ -2,7 +2,11 @@ package org.mj.bizserver.foundation;
 
 import com.google.protobuf.GeneratedMessageV3;
 import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPipeline;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import org.mj.bizserver.allmsg.CommProtocol;
 import org.mj.bizserver.allmsg.InternalServerMsg;
@@ -13,11 +17,11 @@ import org.slf4j.LoggerFactory;
 /**
  * 内部服务器消息处理器
  */
-public class InternalServerMsgHandler extends ChannelDuplexHandler {
+public class InternalServerMsgHandler_BizServer extends ChannelDuplexHandler {
     /**
      * 日志对象
      */
-    static private final Logger LOGGER = LoggerFactory.getLogger(InternalServerMsgHandler.class);
+    static private final Logger LOGGER = LoggerFactory.getLogger(InternalServerMsgHandler_BizServer.class);
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
@@ -25,12 +29,24 @@ public class InternalServerMsgHandler extends ChannelDuplexHandler {
             return;
         }
 
-        // 添加编解码器
-        ctx.pipeline().addBefore(
-            ctx.name(),
-            InternalServerMsgCodec.class.getName(),
-            new InternalServerMsgCodec()
-        );
+        ChannelHandler[] hArray = {
+            new LengthFieldBasedFrameDecoder(4096, 0, 2, 0, 2),
+            new LengthFieldPrepender(2),
+            new InternalServerMsgCodec(),
+        };
+
+        // 获取信道管线
+        ChannelPipeline pl = ctx.pipeline();
+
+        for (ChannelHandler h : hArray) {
+            // 获取处理器类
+            Class<? extends ChannelHandler>
+                hClazz = h.getClass();
+
+            if (null == pl.get(hClazz)) {
+                pl.addBefore(ctx.name(), hClazz.getSimpleName(), h);
+            }
+        }
     }
 
     @Override

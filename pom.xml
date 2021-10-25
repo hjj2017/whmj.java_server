@@ -26,6 +26,7 @@
         <ver.protobuf-java>3.12.1</ver.protobuf-java>
         <ver.mysql-connector-java>8.0.20</ver.mysql-connector-java>
         <ver.mybatis>3.5.4</ver.mybatis>
+        <ver.nacos>2.0.3</ver.nacos>
         <ver.druid>1.1.22</ver.druid>
         <ver.aliyun-sdk-oss>3.10.2</ver.aliyun-sdk-oss>
         <ver.aliyun-java-sdk-core>4.5.3</ver.aliyun-java-sdk-core>
