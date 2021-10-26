@@ -76,7 +76,7 @@ public final class BizServer {
     private BizServer init(String[] argvArray) {
         // 创建参数选项
         Options op = new Options();
-        // --server_id --server_job_type_set -server_host -server_port -c 选项
+        // --server_id --server_job_type_set --server_host --server_port --nacos_server_addr 选项
         op.addRequiredOption(null, "server_id", true, "服务器 Id");
         op.addRequiredOption(null, "server_job_type_set", true, "服务器工作类型集合");
         op.addRequiredOption(null, "server_host", true, "服务器主机地址");
@@ -91,6 +91,8 @@ public final class BizServer {
 
             // 设置服务器 Id
             BizServer._Id = this._cmdLn.getOptionValue("server_id", null);
+            // 初始化配置
+            Config.doInit(this._cmdLn);
         } catch (Exception ex) {
             // 记录错误日志
             LOGGER.error(ex.getMessage(), ex);
