@@ -1,4 +1,4 @@
-package org.mj.proxyserver.foundation;
+package org.mj.proxyserver.base;
 
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.Channel;

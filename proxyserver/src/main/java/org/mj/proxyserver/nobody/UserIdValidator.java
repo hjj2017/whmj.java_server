@@ -3,8 +3,8 @@ package org.mj.proxyserver.nobody;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.mj.bizserver.allmsg.PassportServerProtocol;
-import org.mj.proxyserver.foundation.ClientMsgSemiFinished;
-import org.mj.proxyserver.foundation.IdSetterGetter;
+import org.mj.proxyserver.base.ClientMsgSemiFinished;
+import org.mj.proxyserver.base.IdSetterGetter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

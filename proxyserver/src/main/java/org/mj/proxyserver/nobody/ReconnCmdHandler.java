@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.mj.bizserver.allmsg.CommProtocol;
 import org.mj.bizserver.base.Ukey;
-import org.mj.proxyserver.foundation.ClientMsgSemiFinished;
+import org.mj.proxyserver.base.ClientMsgSemiFinished;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

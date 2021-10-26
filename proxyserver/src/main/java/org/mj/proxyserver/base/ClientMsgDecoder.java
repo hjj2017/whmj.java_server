@@ -1,4 +1,4 @@
-package org.mj.proxyserver.foundation;
+package org.mj.proxyserver.base;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

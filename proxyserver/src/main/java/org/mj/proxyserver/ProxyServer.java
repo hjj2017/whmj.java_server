@@ -14,7 +14,7 @@ import org.mj.proxyserver.cluster.AClubTableChangedListener;
 import org.mj.proxyserver.cluster.ConnectionTransferWatcher;
 import org.mj.proxyserver.cluster.KickOutUserWatcher;
 import org.mj.proxyserver.cluster.NewServerFinder;
-import org.mj.proxyserver.foundation.ChannelHandlerFactoryImpl_1;
+import org.mj.proxyserver.base.ChannelHandlerFactoryImpl_1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

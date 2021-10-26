@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.mj.bizserver.allmsg.ClubServerProtocol;
 import org.mj.bizserver.def.PubSubChannelDef;
 import org.mj.comm.pubsub.MySubscriber;
-import org.mj.proxyserver.foundation.ClientChannelGroup;
+import org.mj.proxyserver.base.ClientChannelGroup;
 import org.mj.proxyserver.nobody.router.RouteTable;
 
 /**

@@ -1,4 +1,4 @@
-package org.mj.proxyserver.foundation;
+package org.mj.proxyserver.base;
 
 /**
  * 客户端消息半成品,

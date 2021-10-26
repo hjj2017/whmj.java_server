@@ -9,9 +9,9 @@ import org.mj.bizserver.def.ServerJobTypeEnum;
 import org.mj.bizserver.base.MsgRecognizer;
 import org.mj.proxyserver.ProxyServer;
 import org.mj.proxyserver.cluster.NewServerFinder;
-import org.mj.proxyserver.foundation.ClientMsgHandler;
-import org.mj.proxyserver.foundation.ClientMsgSemiFinished;
-import org.mj.proxyserver.foundation.IdSetterGetter;
+import org.mj.proxyserver.base.ClientMsgHandler;
+import org.mj.proxyserver.base.ClientMsgSemiFinished;
+import org.mj.proxyserver.base.IdSetterGetter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

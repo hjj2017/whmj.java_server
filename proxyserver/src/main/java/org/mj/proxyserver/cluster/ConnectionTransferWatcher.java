@@ -7,9 +7,9 @@ import org.mj.bizserver.allmsg.CommProtocol;
 import org.mj.bizserver.def.PubSubChannelDef;
 import org.mj.comm.pubsub.MySubscriber;
 import org.mj.proxyserver.ProxyServer;
-import org.mj.proxyserver.foundation.ClientChannelGroup;
-import org.mj.proxyserver.foundation.ClientMsgHandler;
-import org.mj.proxyserver.foundation.IdSetterGetter;
+import org.mj.proxyserver.base.ClientChannelGroup;
+import org.mj.proxyserver.base.ClientMsgHandler;
+import org.mj.proxyserver.base.IdSetterGetter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

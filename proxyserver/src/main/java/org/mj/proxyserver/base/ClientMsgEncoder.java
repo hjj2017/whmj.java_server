@@ -1,4 +1,4 @@
-package org.mj.proxyserver.foundation;
+package org.mj.proxyserver.base;
 
 import com.google.protobuf.GeneratedMessageV3;
 import io.netty.buffer.ByteBuf;

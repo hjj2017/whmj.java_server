@@ -6,7 +6,7 @@ import org.mj.bizserver.def.RedisKeyDef;
 import org.mj.comm.pubsub.MySubscriber;
 import org.mj.comm.util.RedisXuite;
 import org.mj.proxyserver.ProxyServer;
-import org.mj.proxyserver.foundation.ChannelHandlerFactoryImpl_0;
+import org.mj.proxyserver.base.ChannelHandlerFactoryImpl_0;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
