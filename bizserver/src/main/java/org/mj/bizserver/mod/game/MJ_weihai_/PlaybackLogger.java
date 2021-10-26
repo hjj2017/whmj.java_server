@@ -3,7 +3,7 @@ package org.mj.bizserver.mod.game.MJ_weihai_;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import org.mj.bizserver.foundation.AliOSSZervice;
+import org.mj.bizserver.base.AliOSSZervice;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Player;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Round;
 import org.mj.bizserver.mod.game.MJ_weihai_.report.IWordz;

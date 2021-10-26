@@ -1,7 +1,7 @@
 package org.mj.bizserver.cmdhandler.comm;
 
 import org.mj.bizserver.allmsg.CommProtocol;
-import org.mj.bizserver.foundation.MyCmdHandlerContext;
+import org.mj.bizserver.base.MyCmdHandlerContext;
 import org.mj.comm.cmdhandler.ICmdHandler;
 
 /**

@@ -1,6 +1,6 @@
 package org.mj.bizserver.mod.game.MJ_weihai_;
 
-import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.base.BizResultWrapper;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.ChiPengGangHuSession;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.MahjongTileDef;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Player;

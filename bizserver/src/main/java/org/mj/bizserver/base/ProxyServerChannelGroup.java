@@ -1,4 +1,4 @@
-package org.mj.bizserver.foundation;
+package org.mj.bizserver.base;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;

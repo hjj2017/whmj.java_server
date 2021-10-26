@@ -1,6 +1,6 @@
 package org.mj.bizserver.def;
 
-import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.base.BizResultWrapper;
 
 /**
  * 错误定义

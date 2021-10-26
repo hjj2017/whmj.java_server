@@ -8,7 +8,7 @@ import org.mj.bizserver.cluster.CurrServerReporter;
 import org.mj.bizserver.cluster.SystemOfflineUserCleaner;
 import org.mj.bizserver.def.PubSubChannelDef;
 import org.mj.bizserver.def.WorkModeDef;
-import org.mj.bizserver.foundation.InternalServerMsgHandler_BizServer;
+import org.mj.bizserver.base.InternalServerMsgHandler_BizServer;
 import org.mj.comm.network.NettyServer;
 import org.mj.comm.network.NettyServerConf;
 import org.mj.comm.pubsub.MySubscriber;

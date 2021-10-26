@@ -7,7 +7,7 @@ import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import org.mj.bizserver.allmsg.InternalServerMsg;
-import org.mj.bizserver.foundation.MsgRecognizer;
+import org.mj.bizserver.base.MsgRecognizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

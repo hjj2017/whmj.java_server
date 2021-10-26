@@ -2,9 +2,9 @@ package org.mj.bizserver.mod.game.MJ_weihai_;
 
 import org.mj.bizserver.def.ErrorEnum;
 import org.mj.bizserver.def.RedisKeyDef;
-import org.mj.bizserver.foundation.AsyncOperationProcessorSingleton;
-import org.mj.bizserver.foundation.BizResultWrapper;
-import org.mj.bizserver.foundation.IBizResultCallback;
+import org.mj.bizserver.base.AsyncOperationProcessorSingleton;
+import org.mj.bizserver.base.BizResultWrapper;
+import org.mj.bizserver.base.IBizResultCallback;
 import org.mj.bizserver.mod.club.membercenter.MemberCenterBizLogic;
 import org.mj.bizserver.mod.club.membercenter.bizdata.ClubDetailz;
 import org.mj.bizserver.mod.club.membercenter.bizdata.FixGameX;

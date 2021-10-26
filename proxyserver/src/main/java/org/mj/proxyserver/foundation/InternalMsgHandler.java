@@ -4,7 +4,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import org.mj.bizserver.allmsg.CommProtocol;
 import org.mj.bizserver.allmsg.InternalServerMsg;
-import org.mj.bizserver.foundation.InternalServerMsgCodec;
+import org.mj.bizserver.base.InternalServerMsgCodec;
 import org.mj.comm.util.MyTimer;
 import org.mj.proxyserver.ProxyServer;
 import org.slf4j.Logger;

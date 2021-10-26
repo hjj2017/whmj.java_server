@@ -1,4 +1,4 @@
-package org.mj.bizserver.foundation;
+package org.mj.bizserver.base;
 
 import org.mj.comm.util.MD5Util;
 import org.mj.comm.util.OutParam;

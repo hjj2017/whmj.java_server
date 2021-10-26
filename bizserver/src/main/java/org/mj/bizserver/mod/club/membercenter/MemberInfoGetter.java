@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.session.SqlSession;
 import org.mj.bizserver.def.RedisKeyDef;
-import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.base.BizResultWrapper;
 import org.mj.bizserver.mod.club.membercenter.bizdata.MemberInfo;
 import org.mj.bizserver.mod.club.membercenter.bizdata.MemberStateEnum;
 import org.mj.bizserver.mod.club.membercenter.dao.ClubMemberEntity;

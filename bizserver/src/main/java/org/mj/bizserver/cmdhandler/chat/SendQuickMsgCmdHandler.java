@@ -2,9 +2,9 @@ package org.mj.bizserver.cmdhandler.chat;
 
 import io.netty.channel.Channel;
 import org.mj.bizserver.allmsg.ChatServerProtocol;
-import org.mj.bizserver.foundation.AsyncOperationProcessorSingleton;
-import org.mj.bizserver.foundation.MyCmdHandlerContext;
-import org.mj.bizserver.foundation.ProxyServerChannelGroup;
+import org.mj.bizserver.base.AsyncOperationProcessorSingleton;
+import org.mj.bizserver.base.MyCmdHandlerContext;
+import org.mj.bizserver.base.ProxyServerChannelGroup;
 import org.mj.comm.cmdhandler.ICmdHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

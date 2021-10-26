@@ -1,4 +1,4 @@
-package org.mj.bizserver.foundation;
+package org.mj.bizserver.base;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

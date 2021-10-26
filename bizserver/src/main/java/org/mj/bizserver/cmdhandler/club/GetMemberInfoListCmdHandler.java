@@ -1,8 +1,8 @@
 package org.mj.bizserver.cmdhandler.club;
 
 import org.mj.bizserver.allmsg.ClubServerProtocol;
-import org.mj.bizserver.foundation.BizResultWrapper;
-import org.mj.bizserver.foundation.MyCmdHandlerContext;
+import org.mj.bizserver.base.BizResultWrapper;
+import org.mj.bizserver.base.MyCmdHandlerContext;
 import org.mj.bizserver.mod.club.membercenter.MemberCenterBizLogic;
 import org.mj.bizserver.mod.club.membercenter.bizdata.MemberInfo;
 import org.mj.comm.cmdhandler.ICmdHandler;

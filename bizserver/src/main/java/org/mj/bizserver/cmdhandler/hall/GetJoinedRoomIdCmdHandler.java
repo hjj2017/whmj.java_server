@@ -2,8 +2,8 @@ package org.mj.bizserver.cmdhandler.hall;
 
 import org.mj.bizserver.allmsg.HallServerProtocol;
 import org.mj.bizserver.def.RedisKeyDef;
-import org.mj.bizserver.foundation.AsyncOperationProcessorSingleton;
-import org.mj.bizserver.foundation.MyCmdHandlerContext;
+import org.mj.bizserver.base.AsyncOperationProcessorSingleton;
+import org.mj.bizserver.base.MyCmdHandlerContext;
 import org.mj.comm.cmdhandler.ICmdHandler;
 import org.mj.comm.util.RedisXuite;
 import org.slf4j.Logger;

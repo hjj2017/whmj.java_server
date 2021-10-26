@@ -1,8 +1,8 @@
 package org.mj.bizserver.cmdhandler.game.MJ_weihai_;
 
 import org.mj.bizserver.allmsg.MJ_weihai_Protocol;
-import org.mj.bizserver.foundation.BizResultWrapper;
-import org.mj.bizserver.foundation.MyCmdHandlerContext;
+import org.mj.bizserver.base.BizResultWrapper;
+import org.mj.bizserver.base.MyCmdHandlerContext;
 import org.mj.bizserver.mod.game.MJ_weihai_.MJ_weihai_BizLogic;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Room;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.RoomGroup;

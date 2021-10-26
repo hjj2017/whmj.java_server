@@ -2,7 +2,7 @@ package org.mj.bizserver.cmdhandler.game.MJ_weihai_;
 
 import com.google.protobuf.GeneratedMessageV3;
 import org.mj.bizserver.allmsg.MJ_weihai_Protocol;
-import org.mj.bizserver.foundation.MyCmdHandlerContext;
+import org.mj.bizserver.base.MyCmdHandlerContext;
 import org.mj.bizserver.mod.game.MJ_weihai_.MJ_weihai_BizLogic;
 import org.mj.bizserver.mod.game.MJ_weihai_.RoomOverDetermine;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.DissolveRoomSession;

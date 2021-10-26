@@ -1,4 +1,4 @@
-package org.mj.bizserver.foundation;
+package org.mj.bizserver.base;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;

@@ -1,6 +1,6 @@
 package org.mj.bizserver.mod.game.MJ_weihai_.timertask;
 
-import org.mj.bizserver.foundation.MainThreadProcessorSingleton;
+import org.mj.bizserver.base.MainThreadProcessorSingleton;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Room;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.RoomGroup;
 import org.mj.comm.util.MyTimer;

@@ -1,8 +1,8 @@
 package org.mj.bizserver.cmdhandler.record;
 
 import org.mj.bizserver.allmsg.RecordServerProtocol;
-import org.mj.bizserver.foundation.BizResultWrapper;
-import org.mj.bizserver.foundation.MyCmdHandlerContext;
+import org.mj.bizserver.base.BizResultWrapper;
+import org.mj.bizserver.base.MyCmdHandlerContext;
 import org.mj.bizserver.mod.record.RecordBizLogic;
 import org.mj.bizserver.mod.record.bizdata.ARound;
 import org.mj.bizserver.mod.record.bizdata.Player;

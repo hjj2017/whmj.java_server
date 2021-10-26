@@ -1,7 +1,7 @@
 package org.mj.bizserver.cmdhandler.club;
 
 import org.mj.bizserver.allmsg.ClubServerProtocol;
-import org.mj.bizserver.foundation.MyCmdHandlerContext;
+import org.mj.bizserver.base.MyCmdHandlerContext;
 import org.mj.comm.cmdhandler.ICmdHandler;
 
 /**

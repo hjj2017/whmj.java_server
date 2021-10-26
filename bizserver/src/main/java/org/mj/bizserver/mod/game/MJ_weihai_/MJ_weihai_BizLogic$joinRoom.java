@@ -1,9 +1,9 @@
 package org.mj.bizserver.mod.game.MJ_weihai_;
 
 import org.mj.bizserver.def.ErrorEnum;
-import org.mj.bizserver.foundation.AsyncOperationProcessorSingleton;
-import org.mj.bizserver.foundation.BizResultWrapper;
-import org.mj.bizserver.foundation.IBizResultCallback;
+import org.mj.bizserver.base.AsyncOperationProcessorSingleton;
+import org.mj.bizserver.base.BizResultWrapper;
+import org.mj.bizserver.base.IBizResultCallback;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Player;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Room;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.RoomGroup;

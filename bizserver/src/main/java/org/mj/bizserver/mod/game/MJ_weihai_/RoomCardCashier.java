@@ -3,7 +3,7 @@ package org.mj.bizserver.mod.game.MJ_weihai_;
 import org.apache.ibatis.session.SqlSession;
 import org.mj.bizserver.def.GameType1Enum;
 import org.mj.bizserver.def.PaymentWayEnum;
-import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.base.BizResultWrapper;
 import org.mj.bizserver.mod.club.membercenter.MemberCenterBizLogic;
 import org.mj.bizserver.mod.club.membercenter.bizdata.ClubDetailz;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Player;

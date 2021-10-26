@@ -1,8 +1,8 @@
 package org.mj.bizserver.cmdhandler.hall;
 
 import org.mj.bizserver.allmsg.HallServerProtocol;
-import org.mj.bizserver.foundation.BizResultWrapper;
-import org.mj.bizserver.foundation.MyCmdHandlerContext;
+import org.mj.bizserver.base.BizResultWrapper;
+import org.mj.bizserver.base.MyCmdHandlerContext;
 import org.mj.bizserver.mod.userinfo.UserInfoBizLogic;
 import org.mj.bizserver.mod.userinfo.bizdata.UserDetailz;
 import org.mj.comm.cmdhandler.ICmdHandler;

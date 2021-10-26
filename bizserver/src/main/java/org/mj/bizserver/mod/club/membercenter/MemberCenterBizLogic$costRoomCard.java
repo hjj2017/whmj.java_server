@@ -2,7 +2,7 @@ package org.mj.bizserver.mod.club.membercenter;
 
 import org.apache.ibatis.session.SqlSession;
 import org.mj.bizserver.def.RedisKeyDef;
-import org.mj.bizserver.foundation.BizResultWrapper;
+import org.mj.bizserver.base.BizResultWrapper;
 import org.mj.bizserver.mod.club.membercenter.dao.IClubDao;
 import org.mj.comm.util.MySqlXuite;
 import org.mj.comm.util.RedisXuite;

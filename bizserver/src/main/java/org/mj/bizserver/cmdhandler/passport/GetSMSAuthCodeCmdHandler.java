@@ -1,9 +1,9 @@
 package org.mj.bizserver.cmdhandler.passport;
 
 import org.mj.bizserver.allmsg.PassportServerProtocol;
-import org.mj.bizserver.foundation.AliSMSAuthZervice;
-import org.mj.bizserver.foundation.BizResultWrapper;
-import org.mj.bizserver.foundation.MyCmdHandlerContext;
+import org.mj.bizserver.base.AliSMSAuthZervice;
+import org.mj.bizserver.base.BizResultWrapper;
+import org.mj.bizserver.base.MyCmdHandlerContext;
 import org.mj.comm.cmdhandler.ICmdHandler;
 
 /**

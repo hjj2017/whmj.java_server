@@ -1,4 +1,4 @@
-package org.mj.bizserver.foundation;
+package org.mj.bizserver.base;
 
 /**
  * 业务结果

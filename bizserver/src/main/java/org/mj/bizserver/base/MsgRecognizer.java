@@ -1,4 +1,4 @@
-package org.mj.bizserver.foundation;
+package org.mj.bizserver.base;
 
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.Internal;

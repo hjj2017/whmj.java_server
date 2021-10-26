@@ -2,7 +2,7 @@ package org.mj.bizserver.allmsg;
 
 import com.google.protobuf.GeneratedMessageV3;
 import com.google.protobuf.Message;
-import org.mj.bizserver.foundation.MsgRecognizer;
+import org.mj.bizserver.base.MsgRecognizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

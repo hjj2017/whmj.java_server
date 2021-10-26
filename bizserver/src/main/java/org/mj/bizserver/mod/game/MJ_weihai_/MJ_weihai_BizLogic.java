@@ -3,7 +3,7 @@ package org.mj.bizserver.mod.game.MJ_weihai_;
 import com.alibaba.fastjson.JSONObject;
 import org.mj.bizserver.def.PubSubChannelDef;
 import org.mj.bizserver.def.RedisKeyDef;
-import org.mj.bizserver.foundation.AsyncOperationProcessorSingleton;
+import org.mj.bizserver.base.AsyncOperationProcessorSingleton;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.MahjongLiangFeng;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.MahjongTileDef;
 import org.mj.bizserver.mod.game.MJ_weihai_.bizdata.Player;

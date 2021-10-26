@@ -8,7 +8,7 @@ import org.mj.bizserver.allmsg.InternalServerMsg;
 import org.mj.bizserver.allmsg.MJ_weihai_Protocol;
 import org.mj.bizserver.def.RedisKeyDef;
 import org.mj.bizserver.def.ServerJobTypeEnum;
-import org.mj.bizserver.foundation.MsgRecognizer;
+import org.mj.bizserver.base.MsgRecognizer;
 import org.mj.comm.util.RedisXuite;
 import org.mj.proxyserver.ProxyServer;
 import org.mj.proxyserver.cluster.NewServerFinder;

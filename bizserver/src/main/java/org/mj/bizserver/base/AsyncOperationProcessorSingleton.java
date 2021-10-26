@@ -1,4 +1,4 @@
-package org.mj.bizserver.foundation;
+package org.mj.bizserver.base;
 
 import org.mj.comm.async.AsyncOperationProcessor;
 import org.mj.comm.async.IAsyncOperation;

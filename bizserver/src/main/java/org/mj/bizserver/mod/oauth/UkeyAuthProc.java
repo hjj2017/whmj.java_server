@@ -2,7 +2,7 @@ package org.mj.bizserver.mod.oauth;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.session.SqlSession;
-import org.mj.bizserver.foundation.Ukey;
+import org.mj.bizserver.base.Ukey;
 import org.mj.bizserver.mod.oauth.dao.IUserDao;
 import org.mj.bizserver.mod.oauth.dao.UserEntity;
 import org.mj.comm.util.MySqlXuite;
