@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.mj</groupId>
-    <artifactId>java_server</artifactId>
+    <artifactId>whmj.java_server</artifactId>
     <packaging>pom</packaging>
     <version>0.0.1.FINAL</version>
 
@@ -31,7 +31,7 @@
         <ver.aliyun-java-sdk-core>4.5.3</ver.aliyun-java-sdk-core>
         <ver.aliyun-java-sdk-geoip>1.0.3</ver.aliyun-java-sdk-geoip>
         <ver.maven-compiler-plugin>3.8.1</ver.maven-compiler-plugin>
-        <ver.jdk>13</ver.jdk>
+        <ver.jdk>19</ver.jdk>
         <ver.junit>4.13</ver.junit>
     </properties>
 
